@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import CategoryModal from '../../components/Admin/CategoryModal';
 import {
   useAddCategoryMutation,
@@ -17,7 +17,9 @@ const AdminCategoryTable: React.FC = () => {
 
   const categories = data?.categories || [];
   const totalPages = data?.totalPages || 1;
-
+  useEffect(() => {
+    refetch(); 
+  }, [currentPage, refetch]);
   const paginate = (pageNumber: number) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -166,10 +168,7 @@ const AdminCategoryTable: React.FC = () => {
       </div>
 
       <div className="mt-4 flex justify-end">
-        <nav
-          className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-          aria-label="Pagination"
-        >
+      <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
           <button
             onClick={() => paginate(currentPage - 1)}
             disabled={currentPage === 1}

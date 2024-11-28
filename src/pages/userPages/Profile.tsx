@@ -2,6 +2,7 @@ import React from 'react';
 import Sidebar from '../../components/User/Sidebar';
 import Header from '../../components/User/Header';
 import { Outlet } from 'react-router-dom';
+// import Footer from '../../components/User/Footer'
 
 const Profile: React.FC = () => {
   return (
@@ -14,6 +15,7 @@ const Profile: React.FC = () => {
           <Outlet />
         </div>
       </div>
+      {/* <Footer/> */}
     </div>
   );
 };

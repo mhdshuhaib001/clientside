@@ -1,4 +1,3 @@
-import React from 'react'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Image } from "@nextui-org/react"
 
 interface ProductDetailsModalProps {

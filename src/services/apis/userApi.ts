@@ -113,9 +113,17 @@ export const ApiSlice = createApi({
         method: 'POST',
         body: {userId, currentPassword, newPassword, confirmPassword }
       })
-    })
+    }),
+    fetchAuctionHistory: builder.query({
+      query: (userId) => ({
+        url: `/api/user/auction-history?userId=${userId}`, 
+        method: 'GET',
+      }),
+    }),
+
     
   }),
+  
 });
 
 export const {
@@ -133,5 +141,6 @@ export const {
   useUpdateAddressMutation,
   useDeleteAddressMutation,
   useFetchCategoriesQuery,
-  useChangePasswordMutation
+  useChangePasswordMutation,
+  useFetchAuctionHistoryQuery
 } = ApiSlice;

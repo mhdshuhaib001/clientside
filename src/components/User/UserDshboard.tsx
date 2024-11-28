@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useUpdateProfileMutation, useFetchUserByIdQuery } from '../../services/apis/userApi';
+import {
+  useUpdateProfileMutation,
+  useFetchUserByIdQuery,
+  useFetchAuctionHistoryQuery,
+} from '../../services/apis/userApi';
 import {
   Modal,
   ModalContent,
@@ -43,7 +47,6 @@ const biddingSummary = [
     status: 'Cancel',
     date: 'June 2, 2024',
   },
-
 ];
 
 const UserDashBoard: React.FC = () => {
@@ -52,41 +55,41 @@ const UserDashBoard: React.FC = () => {
   const itemsPerPage = 5;
   const userId = useSelector((state: RootState) => state.User._id);
   const { data: userData } = useFetchUserByIdQuery(userId);
+  const { data: auctionHistory, isLoading, error } = useFetchAuctionHistoryQuery(userId);
+  console.log(auctionHistory, 'this is the auction history');
   const totalPages = Math.ceil(biddingSummary.length / itemsPerPage);
   const [updateProfile, { isLoading: updateLoading }] = useUpdateProfileMutation();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  useEffect(() => { 
+  useEffect(() => {
     if (userData && userData.profileImage) {
-      setImagePreview(userData.profileImage); 
+      setImagePreview(userData.profileImage);
     }
   }, [userData]);
-  
+
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     profileImage: Yup.mixed().when('imagePreview', (imagePreview: any | null, schema: any) => {
-      return imagePreview
-        ? schema.notRequired() 
-        : schema.required('A file is required');
+      return imagePreview ? schema.notRequired() : schema.required('A file is required');
     }),
   });
-  
+
   const handleProfileSubmit = async (values: any) => {
     const formData = new FormData();
-  
+
     formData.append('userId', userId);
     formData.append('name', values.name);
-  
+
     if (values.profileImage) {
       formData.append('image', values.profileImage);
     }
-  
+
     try {
       const response = await updateProfile(formData).unwrap();
-      console.log(response,'this is the resoinse')
+      console.log(response, 'this is the resoinse');
       if (response) {
         setImagePreview(URL.createObjectURL(values.profileImage));
-        
+
         onClose();
         toast.success('Profile updated successfully!');
       }
@@ -95,7 +98,7 @@ const UserDashBoard: React.FC = () => {
       console.error('Error updating profile:', error);
     }
   };
-  
+
   return (
     <div className="min-h-screen bg-main-bg p-4 sm:p-6 lg:p-8">
       {/* Profile Section */}
@@ -125,7 +128,7 @@ const UserDashBoard: React.FC = () => {
       </div>
 
       {/* Stats Table */}
-      <div className="m-3 grid grid-cols-1 sm:grid-cols-3 gap-4 p-6 sm:p-8 bg-[#f1f1df] border-50 border-b border-amber-200">
+      {/* <div className="m-3 grid grid-cols-1 sm:grid-cols-3 gap-4 p-6 sm:p-8 bg-[#f1f1df] border-50 border-b border-amber-200">
         {state.map((state) => (
           <div
             key={state.title}
@@ -135,45 +138,60 @@ const UserDashBoard: React.FC = () => {
             <p className="text-gray-600 font-semibold text-lg">{state.value}</p>
           </div>
         ))}
-      </div>
+      </div> */}
 
       <div className="p-6 sm:p-8">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">Bidding Summary</h2>
-        <div className="overflow-x-auto overflow-hidden">
-          <table className="w-full text-sm text-left text-gray-500">
-            <thead className="text-xs text-gray-700 uppercase bg-amber-50">
-              <tr>
-                <th className="px-4 py-2">Auction ID</th>
-                <th className="px-4 py-2">Product name</th>
-                <th className="px-4 py-2">Amount</th>
-                <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">Auction Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {biddingSummary
-                .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                .map((item) => (
-                  <tr
-                    key={item.id}
-                    className="bg-white border-b border-amber-100 hover:bg-amber-50 transition-colors duration-300"
-                  >
-                    <td className="px-4 py-2">{item.id}</td>
-                    <td className="px-4 py-2 font-medium text-gray-900">{item.name}</td>
-                    <td className="px-4 py-2">{item.amount}</td>
-                    <td className="px-4 py-2">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs ${item.status === 'Winning' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
-                      >
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2">{item.date}</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
+        {isLoading ? (
+          <p>Loading auction history...</p>
+        ) : error ? (
+          <p>Error fetching auction history.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left text-gray-500">
+              <thead className="text-xs text-gray-700 uppercase bg-amber-50">
+                <tr>
+                  <th className="px-4 py-2">Auction ID</th>
+                  <th className="px-4 py-2">Product Name</th>
+                  <th className="px-4 py-2">Amount</th>
+                  <th className="px-4 py-2">Status</th>
+                  <th className="px-4 py-2">Auction Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {auctionHistory.data
+                  .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                  .map((item: any,index:number) => (
+                    <tr
+                      key={item._id}
+                      className="bg-white border-b border-amber-100 hover:bg-amber-50 transition-colors duration-300"
+                    >
+                      <td className="px-4 py-2">{`AUC-${index + 1}-${item._id.slice(-4).toUpperCase()}`}</td>
+                      <td className="px-4 py-2 font-medium text-gray-900">{item.productName}</td>
+                      <td className="px-4 py-2">${item.amount}</td>
+                      <td className="px-4 py-2">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs ${
+                            item.status === 'win'
+                              ? 'bg-green-100 text-green-800'
+                              : item.status === 'failed'
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-yellow-100 text-yellow-800'
+                          }`}
+                        >
+                          {item.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2">
+                        {new Date(item.actionDate).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
         <div className="flex justify-center mt-4 gap-2">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
             <button

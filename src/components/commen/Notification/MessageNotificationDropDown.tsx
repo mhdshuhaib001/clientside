@@ -26,6 +26,7 @@ type NotificationType = MessageNotification | OrderNotification;
 
 interface MessageNotificationDropdownProps {
   notifications: NotificationType[];
+  lastNotification: MessageNotification | null;
   onMarkAsRead: (id: string) => void;
   onMarkAllAsRead: () => void;
   onClear: () => void;
@@ -40,6 +41,8 @@ const MessageNotificationDropdown: React.FC<MessageNotificationDropdownProps> = 
   onClear,
   onClose,
   onNotificationClick,
+  lastNotification,
+
 }) => {
   useEffect(() => {
     const unreadCount = notifications.filter(n => !n.isRead).length;
@@ -147,6 +150,14 @@ const MessageNotificationDropdown: React.FC<MessageNotificationDropdownProps> = 
           >
             Clear all
           </button>
+        </div>
+      )}
+
+{lastNotification && (
+        <div className="p-3 bg-green-50 border-t">
+          <p className="text-sm">
+            <strong>{lastNotification.senderName}</strong>: {lastNotification.message}
+          </p>
         </div>
       )}
     </div>

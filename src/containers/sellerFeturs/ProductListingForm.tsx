@@ -29,7 +29,6 @@ interface FormValues {
   shippingType: string;
   shippingCost: string;
   handlingTime: string;
-  returnPolicy: string;
   auctionStartDateTime: any;
   auctionEndDateTime: any;
   images: File[];
@@ -64,7 +63,6 @@ const ProductListingForm: React.FC = () => {
     shippingType: '',
     shippingCost: '',
     handlingTime: '',
-    returnPolicy: '',
     auctionStartDateTime: null,
     auctionEndDateTime: null,
     images: [],
@@ -152,7 +150,6 @@ const ProductListingForm: React.FC = () => {
       shippingType: productDetails.shippingType || '',
       shippingCost: productDetails.shippingCost?.toString() || '',
       handlingTime: productDetails.handlingTime || '',
-      returnPolicy: productDetails.returnPolicy || '',
       auctionStartDateTime:
         productDetails.auctionStartDateTime &&
         new CalendarDateTime(

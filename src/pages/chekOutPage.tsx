@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CreditCard, WalletMinimal , Truck } from 'lucide-react';
+import { CreditCard, WalletMinimal, Truck } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { useGetProductByIdQuery } from '../services/apis/productApi';
 import { useGetAddressQuery } from '../services/apis/userApi';
@@ -119,13 +119,17 @@ const CheckoutPage: React.FC = () => {
         const orderResponse = await createOrder(orderData);
         const orderId = orderResponse.data;
 
-        let price = productData.finalBidAmount
-          ? productData.finalBidAmount
-          : productData.reservePrice;
+        let price = productData.auctionStatus === 'sold' && productData.currentBid 
+        ? productData.currentBid 
+        : productData.reservePrice;
+
+
+        const totalPrice = price + productData.shippingCost;
+
         const product = {
           image: productData.images[0],
           name: productData.itemTitle,
-          price: price,
+          price: totalPrice,
           orderId: orderId,
         };
 
@@ -167,7 +171,7 @@ const CheckoutPage: React.FC = () => {
                     <div className="space-y-2">
                       {[
                         { id: 'credit-card', label: 'Credit Card', icon: CreditCard },
-                        { id: 'wallet', label: 'Bank Transfer', icon: WalletMinimal  },
+                        { id: 'wallet', label: 'Bank Transfer', icon: WalletMinimal },
                         { id: 'stripe', label: 'stripe', icon: Truck },
                       ].map((method) => (
                         <label
@@ -306,9 +310,9 @@ const CheckoutPage: React.FC = () => {
                           <span>Total</span>
                           <span>
                             ${' '}
-                            {(productData.auctionStatus === 'sold'
-                              ? productData.finalBidAmount
-                              : productData.reservePrice) + productData.shippingCost}
+                            {productData.auctionStatus === 'sold' && productData.currentBid
+                              ? productData.currentBid + productData.shippingCost
+                              : productData.reservePrice + productData.shippingCost}
                           </span>
                         </div>
                       </div>

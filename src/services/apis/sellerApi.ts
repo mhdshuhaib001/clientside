@@ -5,7 +5,6 @@ import {
   AddProductResponse,
   ProductsResponse,
 } from '../../interface/sellerTypes/sellerApiTypes';
-import { ProductType } from '../../interface/productTypes/productType';
 import { OrderResponse } from '../../interface/orderTypes/orderType';
 import { Review } from '../../interface/reviewTypes/review';
 
@@ -55,19 +54,27 @@ export const sellerApi = createApi({
         body: formData,
       }),
     }),
-    fetchProducts: builder.query<ProductsResponse, string>({
-      query: (sellerId) => ({
+    fetchProducts: builder.query<ProductsResponse,  { 
+      sellerId: string; 
+      page?: number; 
+      limit?: number 
+    }>({
+      query: ({ sellerId, page = 1, limit =5  }) => ({
         url: `/api/seller/fetchProducts/${sellerId}`,
         method: 'GET',
+        params: { page, limit }
       }),
     }),
-    fetchAllProducts: builder.query<ProductsResponse, { page: number; limit: number }>({
-      query: ({ page, limit }) => ({
-        url: `/api/seller/getproducts?page=${page}&limit=${limit}`,
-        method: 'GET',
-      }),
+    fetchAllProducts: builder.query<
+    { products:any; totalPages: number; currentPage: number; totalItems: number },
+    { page: number; limit: number }
+  >({
+    query: ({ page, limit }) => ({
+      url: `/api/seller/getproducts?page=${page}&limit=${limit}`,
+      method: 'GET',
     }),
-
+  }),
+  
     getProduct: builder.query<any, string>({
       query: (productId) => ({
         url: `/api/products/getProduct/${productId}`,
@@ -132,11 +139,11 @@ export const sellerApi = createApi({
         body: newReview,
       }),
     }),
-    getSellerDashboard: builder.query<any, { sellerId: string; timeframe: string }>({
-      query: ({ sellerId, timeframe }) => ({
+    getSellerDashboard: builder.query({
+      query: ({ sellerId, timeframe = 'monthly' }) => ({
         url: `/api/seller/${sellerId}/dashboard`,
         method: 'GET',
-        params: { timeframe },
+        params: { timeframe }
       }),
       transformResponse: (response: { success: boolean; data: any }) => response.data,
     }),

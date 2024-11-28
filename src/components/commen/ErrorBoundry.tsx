@@ -1,7 +1,7 @@
 import React, { Component, ReactNode } from 'react';
 
 interface Props {
-  children: ReactNode; 
+  children: ReactNode;
 }
 
 interface State {
@@ -20,23 +20,26 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("Error caught in ErrorBoundary:", error, errorInfo);
+    console.error('Error caught in ErrorBoundary:', error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div>
-          <h1>Something went wrong.</h1>
-          <p>{this.state.error?.message}</p>
-          <button onClick={() => this.setState({ hasError: false, error: null })}>
+        <div className="flex flex-col items-center justify-center p-6 bg-red-100 text-red-800 border border-red-300 rounded-lg shadow-md m-4">
+          <h1 className="text-2xl font-bold mb-4">Something went wrong.</h1>
+          <p className="text-lg mb-6">{this.state.error?.message}</p>
+          <button
+            className="px-6 py-2 text-lg bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+            onClick={() => this.setState({ hasError: false, error: null })}
+          >
             Try Again
           </button>
         </div>
       );
     }
 
-    return this.props.children; 
+    return this.props.children;
   }
 }
 

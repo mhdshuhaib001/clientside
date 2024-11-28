@@ -41,19 +41,15 @@ export default function UserManagementTable() {
         prevUsers.map((user) => (user._id === userId ? { ...user, isActive: newIsActive } : user)),
       );
       toast.success(`User ${newIsActive ? 'unblocked' : 'blocked'} successfully!`);
-
     } catch (error) {
       console.error('Error updating user status:', error);
       toast.error('Error updating user status. Please try again.');
-
     }
   };
 
   const handleRoleAction = (userId: string, role: string) => {
     console.log(`Action for user role: ${role} with user ID: ${userId}`);
   };
-
- 
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4 space-y-4">
@@ -108,12 +104,12 @@ export default function UserManagementTable() {
                 <td className="p-3">{user.email}</td>
                 <td className="p-3">
                   {user.isActive ? (
-                    <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
-                      Active
-                    </span>
-                  ) : (
                     <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">
                       Blocked
+                    </span>
+                  ) : (
+                    <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                      Active
                     </span>
                   )}
                 </td>

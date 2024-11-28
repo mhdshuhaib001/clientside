@@ -57,7 +57,10 @@ export interface AddProductResponse {
 }
 
 export interface ProductsResponse {
+  currentPage: number;
+  totalPages: number;
   products: ProductType[];
+  
 }
 export interface Product {
   id: string;

@@ -1,6 +1,14 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { AdminLoginRequest, AdminLoginResponse ,AddCategoryRequest, FetchCategoriesResponse,AddReportRequest,AddReportResponse, FetchReportsResponse} from '../../interface/adminTypes/adminApiTypes';
-
+import {
+  AdminLoginRequest,
+  AdminLoginResponse,
+  AddCategoryRequest,
+  FetchCategoriesResponse,
+  AddReportRequest,
+  AddReportResponse,
+  FetchReportsResponse,
+} from '../../interface/adminTypes/adminApiTypes';
+import { EscrowResponse, EscrowQueryParams } from '../../interface/escrow/IEscrow';
 export const adminApi = createApi({
   reducerPath: 'adminApi',
   baseQuery: fetchBaseQuery({
@@ -35,13 +43,19 @@ export const adminApi = createApi({
         body: formData,
       }),
     }),
-    fetchCategory:builder.query<FetchCategoriesResponse,{page:number,limit:number}>({
-      query:({ page, limit })=>({
-        url:`api/admin/categories?page=${page}$limit=${limit}`,
-        method: 'GET'
+    fetchCategory: builder.query<FetchCategoriesResponse, { page: number; limit: number }>({
+      query: ({ page, limit }) => ({
+        url: `api/admin/categories?page=${page}&limit=${limit}`,
+        method: 'GET',
+      }),
+      transformResponse: (response: any) => ({
+        success: true,
+        categories: response.categories,
+        totalPages: response.totalPages,
+        currentPage: response.currentPage
       })
     }),
-    updateCategory: builder.mutation<FetchCategoriesResponse, {id:string ; formData:FormData}>({
+    updateCategory: builder.mutation<FetchCategoriesResponse, { id: string; formData: FormData }>({
       query: ({ id, formData }) => ({
         url: `/api/admin/categories/${id}`,
         method: 'PUT',
@@ -56,14 +70,14 @@ export const adminApi = createApi({
       }),
     }),
 
-    addReport:builder.mutation<AddReportResponse,AddReportRequest>({
-      query:(reportData)=>({
-        url:'/api/admin/report',
-        method:'POST',
-        body:reportData
-      })
+    addReport: builder.mutation<AddReportResponse, AddReportRequest>({
+      query: (reportData) => ({
+        url: '/api/admin/report',
+        method: 'POST',
+        body: reportData,
+      }),
     }),
-    fetchReports:builder.query<FetchReportsResponse,void>({
+    fetchReports: builder.query<FetchReportsResponse, void>({
       query: () => ({
         url: '/api/admin/getreports',
         method: 'GET',
@@ -83,12 +97,26 @@ export const adminApi = createApi({
         body: notificationData,
       }),
     }),
-    
-
+    getEscrowPayments: builder.query<EscrowResponse, EscrowQueryParams>({
+      query: (params) => ({
+        url: '/api/admin/escrow',
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 10,
+          status: params.status,
+          startDate: params.startDate,
+          endDate: params.endDate,
+          searchTerm: params.searchTerm,
+          searchType: params.searchType,
+        },
+      }),
+    }),
+    getDashboardData: builder.query({
+      query: (period = 'weekly') => `/api/admin/dashboard?period=${period}`,
+      transformResponse: (response:any) => response.data
+    })
   }),
-    
-  })
-
+});
 
 export const {
   useAdminLoginMutation,
@@ -101,5 +129,7 @@ export const {
   useAddReportMutation,
   useFetchReportsQuery,
   useUpdateReportStatusMutation,
-  useSubscribeNotificationMutation
+  useSubscribeNotificationMutation,
+  useGetEscrowPaymentsQuery,
+  useGetDashboardDataQuery
 } = adminApi;

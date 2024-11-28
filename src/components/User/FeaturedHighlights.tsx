@@ -2,17 +2,53 @@ import React from 'react'
 import { ShoppingBag, Gavel, Shield, HelpCircle, Users, ClipboardList, UserPlus, UserCheck } from 'lucide-react'
 
 const features = [
-  { icon: <ShoppingBag className="w-8 h-8 text-orange-500" />, title: 'Discover the best deals', description: 'Egestas libero. Aenean id lacin est. Mauris um purus, docni.' },
-  { icon: <Gavel className="w-8 h-8 text-orange-500" />, title: 'Standout Auctions', description: 'Egestas libero. Aenean id lacin est. Mauris um purus, docni.' },
-  { icon: <Shield className="w-8 h-8 text-orange-500" />, title: 'Pay safely', description: 'Egestas libero. Aenean id lacin est. Mauris um purus, docni.' },
-  { icon: <HelpCircle className="w-8 h-8 text-orange-500" />, title: "We're here to help", description: 'Egestas libero. Aenean id lacin est. Mauris um purus, docni.' },
+  { 
+    icon: <ShoppingBag className="w-8 h-8 text-orange-500" />, 
+    title: 'Smart Bidding Tools', 
+    description: 'Set your maximum bid and let our system automatically bid for you, ensuring you never miss out on your desired items.' 
+  },
+  { 
+    icon: <Gavel className="w-8 h-8 text-orange-500" />, 
+    title: 'Live Auction Streaming', 
+    description: 'Join real-time auctions from anywhere with our live streaming feature, complete with instant bidding capabilities.' 
+  },
+  { 
+    icon: <Shield className="w-8 h-8 text-orange-500" />, 
+    title: 'Secure Transactions', 
+    description: 'Benefit from our encrypted payment system and escrow service that protects both buyers and sellers throughout the process.' 
+  },
+  { 
+    icon: <HelpCircle className="w-8 h-8 text-orange-500" />, 
+    title: '24/7 Support', 
+    description: 'Access our dedicated support team anytime through live chat, email, or phone for assistance with your auctions.' 
+  },
 ]
 
 const stats = [
-  { icon: <Users className="w-6 h-6 text-gray-600" />, value: '3.5k', label: 'Customer', subLabel: 'Total Customer' },
-  { icon: <ClipboardList className="w-6 h-6 text-gray-600" />, value: '700', label: 'Auction', subLabel: 'Total Product' },
-  { icon: <UserPlus className="w-6 h-6 text-gray-600" />, value: '5.6k', label: 'Bidder', subLabel: 'Number Of Total Bidder' },
-  { icon: <UserCheck className="w-6 h-6 text-gray-600" />, value: '7.4k', label: 'Account', subLabel: 'User Helped' },
+  { 
+    icon: <Users className="w-6 h-6 text-gray-600" />, 
+    value: '250k+', 
+    label: 'Active Users', 
+    subLabel: 'Monthly Participants' 
+  },
+  { 
+    icon: <ClipboardList className="w-6 h-6 text-gray-600" />, 
+    value: '15k+', 
+    label: 'Live Auctions', 
+    subLabel: 'Active Listings' 
+  },
+  { 
+    icon: <UserPlus className="w-6 h-6 text-gray-600" />, 
+    value: '$2.8M', 
+    label: 'Total Sales', 
+    subLabel: 'Monthly Volume' 
+  },
+  { 
+    icon: <UserCheck className="w-6 h-6 text-gray-600" />, 
+    value: '99.8%', 
+    label: 'Success Rate', 
+    subLabel: 'Completed Auctions' 
+  },
 ]
 
 export default function FeaturedHighlights() {

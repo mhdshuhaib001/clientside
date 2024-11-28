@@ -80,11 +80,10 @@ export default function RealTimeBidding() {
 
   // Socket Connection Effect
   useEffect(() => {
-    const socket = io('http://localhost:8000');
+    const socket = io(import.meta.env.VITE_SERVER_URL);
     socketRef.current = socket;
 
     socket.on('connect', () => {
-      console.log('Connected to socket');
       socket.emit('join_auction', id, userId);
     });
 
@@ -105,7 +104,6 @@ export default function RealTimeBidding() {
     });
 
     socket.on('auction_winner', (data) => {
-      console.log('Received winner notification:', data);
       if (data.winnerId === userId) {
         toast.success('Congratulations! You won the auction!', {
           duration: 5000,
@@ -179,10 +177,10 @@ export default function RealTimeBidding() {
       console.error('Socket is not initialized.');
       return;
     }
-    // if(userData.role === 'seller'){
-    //   toast.error('You cannot place a bid on your own auction.');
-    //   return;
-    // }
+    if(userData.role === 'seller'){
+      toast.error('You cannot place a bid on your own auction.');
+      return;
+    }
 
     if (amount <= currentBid) {
       toast.error('Your bid must be greater than the current bid.');

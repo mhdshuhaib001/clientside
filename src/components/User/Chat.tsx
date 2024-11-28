@@ -7,7 +7,7 @@ import { useFetchAllSellerQuery } from '../../services/apis/sellerApi';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/Store';
 import { Message, Contact } from '../../interface/chatTypes/chat';
-import {useGetMessagesQuery} from '../../services/apis/chatApi';
+import { useGetMessagesQuery } from '../../services/apis/chatApi';
 import VideoChat from '../../components/User/VideoChat';
 
 const getInitials = (name: string) => {
@@ -26,7 +26,6 @@ const Chat: React.FC = () => {
   const [newMessage, setNewMessage] = useState('');
   const [showVideoCall, setShowVideoCall] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState('');
-  
 
   const [combinedMessages, setCombinedMessages] = useState<Message[]>([]);
 
@@ -36,36 +35,45 @@ const Chat: React.FC = () => {
     joinRoom,
     typingUsers,
     handleTyping,
+    setUserOnline,
+    onlineUsers,
+    notifications, 
+    markNotificationAsRead 
   } = useSocket();
+
   const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
+  const currentUserId = sellerId ? sellerId : userId;
 
- 
+  useEffect(() => {
+    if (currentUserId) {
+      setUserOnline(currentUserId);
+    }
+  }, [currentUserId, setUserOnline]);
+
   const contacts: Contact[] =
-  userRole === 'user'
-    ? sellerContacts?.map((contact: any) => ({
-        id: contact._id,
-        name: contact.companyName,
-        avatar: contact.profile || '',
-        lastMessage: 'No messages yet',
-        online: false,
-      })) || []
-    : userContacts
-        ?.filter((contact: any) => contact.role === 'user')
-        .map((contact: any) => ({
+    userRole === 'user'
+      ? sellerContacts?.map((contact: any) => ({
           id: contact._id,
-
-          name: contact.name,
-          avatar: contact.profileImage || '',
+          name: contact.companyName,
+          avatar: contact.profile || '',
           lastMessage: 'No messages yet',
-          online: false,
-        })) || [];
+          online: onlineUsers.includes(contact._id),
+        })) || []
+      : userContacts
+          ?.filter((contact: any) => contact.role === 'user')
+          .map((contact: any) => ({
+            id: contact._id,
+            name: contact.name,
+            avatar: contact.profileImage || '',
+            lastMessage: 'No messages yet',
+            online: onlineUsers.includes(contact._id),
+          })) || [];
 
   // Filter contacts based on search query
   const filteredContacts = contacts.filter((contact) =>
     contact.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  const currentUserId = sellerId ? sellerId : userId;
   const { data: messagesData } = useGetMessagesQuery({
     senderId: currentUserId,
     receiverId: selectedChat?.id || '',
@@ -158,7 +166,7 @@ const Chat: React.FC = () => {
       receiverId: selectedChat.id,
       message: newMessage,
       timestamp: new Date().toISOString(),
-      senderRole: userRole, 
+      senderRole: userRole,
     };
 
     sendMessage(message);
@@ -171,6 +179,28 @@ const Chat: React.FC = () => {
     const roomId = getRoomId(currentUserId, selectedChat.id);
     return typingUsers[roomId];
   }, [selectedChat, currentUserId, typingUsers]);
+
+
+
+  const renderNotifications = () => (
+    <div className="notification-container">
+      {notifications
+        .filter(notification => !notification.isRead)
+        .map(notification => (
+          <div 
+            key={notification.id} 
+            className="notification unread"
+            onClick={() => markNotificationAsRead(notification.id)}
+          >
+            <p>{notification.senderName}: {notification.message}</p>
+            <span className="timestamp">
+              {new Date(notification.timestamp).toLocaleTimeString()}
+            </span>
+          </div>
+        ))
+      }
+    </div>
+  );
 
   return (
     <div className="flex h-screen bg-main-bg">
@@ -214,8 +244,8 @@ const Chat: React.FC = () => {
                 </Avatar>
                 <span
                   className={`absolute bottom-0 right-0 w-3 h-3 rounded-full ${
-                    contact.online ? 'bg-green-500' : 'bg-gray-300'
-                  }`}
+                    contact.online ? 'bg-green-500 animate-pulse' : 'bg-gray-300'
+                  } transition-all duration-500 ease-in-out`}
                 ></span>
               </div>
               <div className="ml-4">
@@ -298,7 +328,6 @@ const Chat: React.FC = () => {
                             minute: '2-digit',
                           })
                         : ''}
-                     
                     </p>
                   </div>
                 </div>

@@ -3,8 +3,6 @@ import { useChangePasswordMutation } from '../../services/apis/userApi';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/Store';
 
-
-
 const ChangePassword: React.FC = () => {
   const userId = useSelector((state: RootState) => state.User._id);
 
@@ -13,11 +11,17 @@ const ChangePassword: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<boolean>(false);
+  
+  const [showCurrentPassword, setShowCurrentPassword] = useState<boolean>(false);
+  const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+
   const [ChangePassword] = useChangePasswordMutation();
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setError('');
-    setSuccess(false);
+    setSuccess(false); 
 
     if (!currentPassword || !newPassword || !confirmPassword) {
       setError('All fields are required');
@@ -34,6 +38,16 @@ const ChangePassword: React.FC = () => {
       return;
     }
 
+    if (/\s/.test(newPassword)) {
+      setError('Spaces are not allowed in the password');
+      return;
+    }
+
+    if (!/[A-Z]/.test(newPassword)) {
+      setError('New password must contain at least one uppercase letter');
+      return;
+    }
+
     try {
       const result = await ChangePassword({
         userId,
@@ -42,21 +56,28 @@ const ChangePassword: React.FC = () => {
         confirmPassword,
       });
 
-      console.log(result,'changepassword result')
-      if (result.data) {
-        if (result.data.success=== true) {
-          setSuccess(true);
-          alert('Password changed successfully!');
-          setCurrentPassword('');
-          setNewPassword('');
-          setConfirmPassword('');
+      if (result.data && result.data.success === false) {
+        if (result.data.message === "Current password is incorrect") {
+          setError("Current password is incorrect");
         } else {
           setError(result.data.message || 'An error occurred. Please try again.');
         }
+      } else if (result.data && result.data.success === true) {
+        setSuccess(true);
+        alert('Password changed successfully!');
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        setError('Current password is incorrect');
       }
     } catch (err) {
       setError('Failed to change password. Please try again.');
     }
+  };
+
+  const handleInputChange = () => {
+    setError('');
   };
 
   return (
@@ -95,17 +116,25 @@ const ChangePassword: React.FC = () => {
               >
                 Current Password
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
                 <input
                   id="current-password"
                   name="current-password"
-                  type="password"
+                  type={showCurrentPassword ? 'text' : 'password'}
                   className="appearance-none block w-full px-3 py-2 border border-amber-300 rounded-md shadow-sm placeholder-amber-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 bg-amber-50 text-amber-900 sm:text-sm"
                   value={currentPassword}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setCurrentPassword(e.target.value)
-                  }
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setCurrentPassword(e.target.value);
+                    handleInputChange(); 
+                  }}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-600"
+                >
+                  {showCurrentPassword ? 'Hide' : 'Show'}
+                </button>
               </div>
             </div>
 
@@ -113,17 +142,25 @@ const ChangePassword: React.FC = () => {
               <label htmlFor="new-password" className="block text-sm font-medium text-amber-900">
                 New Password
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
                 <input
                   id="new-password"
                   name="new-password"
-                  type="password"
+                  type={showNewPassword ? 'text' : 'password'}
                   className="appearance-none block w-full px-3 py-2 border border-amber-300 rounded-md shadow-sm placeholder-amber-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 bg-amber-50 text-amber-900 sm:text-sm"
                   value={newPassword}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setNewPassword(e.target.value)
-                  }
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setNewPassword(e.target.value);
+                    handleInputChange();
+                  }}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-600"
+                >
+                  {showNewPassword ? 'Hide' : 'Show'}
+                </button>
               </div>
             </div>
 
@@ -134,20 +171,29 @@ const ChangePassword: React.FC = () => {
               >
                 Confirm New Password
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
                 <input
                   id="confirm-password"
                   name="confirm-password"
-                  type="password"
+                  type={showConfirmPassword ? 'text' : 'password'}
                   className="appearance-none block w-full px-3 py-2 border border-amber-300 rounded-md shadow-sm placeholder-amber-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 bg-amber-50 text-amber-900 sm:text-sm"
                   value={confirmPassword}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setConfirmPassword(e.target.value)
-                  }
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setConfirmPassword(e.target.value);
+                    handleInputChange(); 
+                  }}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-600"
+                >
+                  {showConfirmPassword ? 'Hide' : 'Show'}
+                </button>
               </div>
             </div>
 
+            {/* Error and Success Messages */}
             {error && (
               <div className="text-red-600 text-sm bg-red-100 border border-red-400 rounded-md p-2">
                 {error}
@@ -160,6 +206,7 @@ const ChangePassword: React.FC = () => {
               </div>
             )}
 
+            {/* Submit Button */} 
             <div>
               <button
                 type="submit"

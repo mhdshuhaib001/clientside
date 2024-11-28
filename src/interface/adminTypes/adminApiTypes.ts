@@ -23,12 +23,13 @@ export interface UploadCategory {
   icon: string | File | null; 
 }
 
+
 export interface FetchCategoriesResponse {
   success: boolean;
   categories: Category[];
-  totalPages:number
+  totalPages: number;
+  currentPage: number;
 }
-
 export interface AddCategoryRequest {
   name: string;
   image: File; 

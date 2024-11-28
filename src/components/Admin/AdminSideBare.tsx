@@ -18,14 +18,14 @@ const AdminSideBare: React.FC = () => {
           alt="Profile"
           className="w-20 h-20 bg-gray-600 mb-4 rounded-sm"
         />
-        <h2 className="text-lg font-semibold">Admin Name</h2>
-        <p className="text-sm text-gray-400">admin@example.com</p>
+        <h2 className="text-lg font-semibold">Auction Gems</h2>
+        <p className="text-sm text-gray-400">auctiongems@gmail.com</p>
       </div>
 
       {/* Navigation Links */}
       <ul className="space-y-4 w-full text-start p-4 ml-4">
         <li className="hover:bg-gray-700 p-2 rounded cursor-pointer">
-          <Link to="/admin/admin-dashboard/dashboard">Dashboard</Link>
+          <Link to="/admin/admin-dashboard">Dashboard</Link>
         </li>
         <li className="hover:bg-gray-700 p-2 rounded cursor-pointer">
           <Link to="/admin/admin-dashboard/user-management">Users Managment</Link>
@@ -36,7 +36,7 @@ const AdminSideBare: React.FC = () => {
         <li className="hover:bg-gray-700 p-2 rounded cursor-pointer">
           <Link to={'/admin/admin-dashboard/report-management'}>ReportManagment</Link>
         </li>
-        <li className="hover:bg-gray-700 p-2 rounded cursor-pointer">Settings</li>
+        <li className="hover:bg-gray-700 p-2 rounded cursor-pointer"><Link to={'/admin/admin-dashboard/escrow-managment'}>Escrow</Link></li>
       </ul>
 
       {/* Logout Section */}
