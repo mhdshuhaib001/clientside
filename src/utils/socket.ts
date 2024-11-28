@@ -33,7 +33,7 @@ class SocketConnection {
 
   static getInstance(): Socket {
     if (!this.instance) {
-      this.instance = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:8000', {
+      this.instance = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:8000', {
         withCredentials: true,
         reconnection: true,
         reconnectionAttempts: 5,

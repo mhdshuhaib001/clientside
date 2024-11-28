@@ -6,7 +6,7 @@ export default interface AuctionItemProps {
     currentBid: Number | string;
   };
   auctionEndTime?: string | null;
-  status?: 'live' | 'upcoming' | 'end' | 'sold'|'relisted';
+  status: 'live' | 'upcoming' | 'end' | 'sold'|'relisted';
   auctionFormat: string;
   auctionStartTime?:string|null
 }

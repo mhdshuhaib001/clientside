@@ -2,8 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { Message } from '../../interface/chatTypes/chat';
 
-// const SOCKET_SERVER_URL = import.meta.env.VITE_SERVER_URL;
-const SOCKET_SERVER_URL = 'ws://localhost:8000';
+const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL;
 
 
 export const useSocket = () => {

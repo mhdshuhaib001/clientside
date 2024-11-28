@@ -80,7 +80,7 @@ export default function RealTimeBidding() {
 
   // Socket Connection Effect
   useEffect(() => {
-    const socket = io(import.meta.env.VITE_SERVER_URL);
+    const socket = io(import.meta.env.VITE_SOCKET_URL);
     socketRef.current = socket;
 
     socket.on('connect', () => {
