@@ -33,15 +33,16 @@ class SocketConnection {
 
   static getInstance(): Socket {
     if (!this.instance) {
-      this.instance = io('wss://backend.loomfashion.online' , {
-        path: '/api/socket.io',
+      this.instance = io('https://backend.loomfashion.online', {
+        // path: '/api/socket.io',
+        transports: ['websocket', 'polling'],
         withCredentials: true,
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,
         timeout: 5000,
-        transports: ['websocket', 'polling'],
       });
+      
 
       // Comprehensive connection logging
       this.instance.on('connect', () => {
