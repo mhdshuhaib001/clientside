@@ -34,7 +34,7 @@ class SocketConnection {
   static getInstance(): Socket {
     if (!this.instance) {
       this.instance = io('https://backend.loomfashion.online', {
-        // path: '/api/socket.io',
+        path: '/socket.io',
         transports: ['websocket', 'polling'],
         withCredentials: true,
         reconnection: true,
