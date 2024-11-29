@@ -10,7 +10,7 @@ import ErrorBoundary from './components/commen/ErrorBoundry';
 const UserRoutes = lazy(() => import('./Routes/UserRouts'));
 const AdminRoutes = lazy(() => import('./Routes/AdminRouts'));
 import ProtectedRoute from './Routes/ProtectRout/ProtectedRoute';
-
+import Error from './components/commen/ErrorPage'
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 interface FCMNotificationPayload {
@@ -63,6 +63,8 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/*" element={<ProtectedRoute><UserRoutes /></ProtectedRoute>} />
             <Route path="/admin/*" element={<AdminRoutes />} />
+            <Route path="*" element={<Error />} />
+
           </Routes>
         </Suspense>
         </ErrorBoundary>
