@@ -14,8 +14,8 @@ export const useSocket = () => {
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
   useEffect(() => {
-    const newSocket = io('wss://backend.loomfashion.online', {
-      path: "/api/socket.io",
+    const newSocket = io('https://backend.loomfashion.online', {
+      path: "/socket.io",
       withCredentials: true,
       transports: ['websocket', 'polling']
     });

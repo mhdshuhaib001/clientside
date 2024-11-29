@@ -80,8 +80,8 @@ export default function RealTimeBidding() {
 
   // Socket Connection Effect
   useEffect(() => {
-    const socket = io(import.meta.env.VITE_SOCKET_URL, {
-      path: "/api/socket.io", 
+    const socket = io('https://backend.loomfashion.online', {
+      path: "socket.io", 
       withCredentials: true,
       transports: ['websocket', 'polling']
     });    socketRef.current = socket;
