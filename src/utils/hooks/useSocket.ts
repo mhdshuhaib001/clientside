@@ -14,8 +14,11 @@ export const useSocket = () => {
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
   useEffect(() => {
-    const newSocket = io(SOCKET_SERVER_URL);
-
+    const newSocket = io(SOCKET_SERVER_URL, {
+      path: "/api/socket.io",
+      withCredentials: true,
+      transports: ['websocket', 'polling']
+    });
     newSocket.on('connect', () => {
       console.log('Socket connected....');
       

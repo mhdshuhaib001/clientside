@@ -80,8 +80,11 @@ export default function RealTimeBidding() {
 
   // Socket Connection Effect
   useEffect(() => {
-    const socket = io(import.meta.env.VITE_SOCKET_URL);
-    socketRef.current = socket;
+    const socket = io(import.meta.env.VITE_SOCKET_URL, {
+      path: "/api/socket.io", 
+      withCredentials: true,
+      transports: ['websocket', 'polling']
+    });    socketRef.current = socket;
 
     socket.on('connect', () => {
       socket.emit('join_auction', id, userId);
