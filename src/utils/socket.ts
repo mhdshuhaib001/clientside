@@ -33,7 +33,7 @@ class SocketConnection {
 
   static getInstance(): Socket {
     if (!this.instance) {
-      this.instance = io(import.meta.env.VITE_SOCKET_URL , {
+      this.instance = io('wss://backend.loomfashion.online' , {
         path: '/api/socket.io',
         withCredentials: true,
         reconnection: true,

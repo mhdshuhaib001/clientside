@@ -110,24 +110,7 @@ const ProductListingForm: React.FC = () => {
     }
   };
 
-  // const convertToCalendarDateTime = (dateString: string): CalendarDateTime | null => {
-  //   try {
-  //     const date = new Date(dateString);
-  //     if (isNaN(date.getTime())) return null;
 
-  //     return new CalendarDateTime(
-  //       date.getUTCFullYear(),
-  //       date.getUTCMonth() + 1,
-  //       date.getUTCDate(),
-  //       date.getUTCHours(),
-  //       date.getUTCMinutes(),
-  //       date.getUTCSeconds(),
-  //     );
-  //   } catch (error) {
-  //     console.error('Invalid date conversion:', error);
-  //     return null;
-  //   }
-  // };
 
   useEffect(() => {
     if (!productDetails) {
@@ -360,6 +343,7 @@ const ProductListingForm: React.FC = () => {
                         className="hidden"
                         name="images"
                         multiple
+                        aria-label="Upload product images"
                         onChange={(e) => handleFileInputChange(e, setFieldValue)}
                       />
                     </label>
@@ -418,6 +402,7 @@ const ProductListingForm: React.FC = () => {
                     <Field
                       as="select"
                       name="auctionFormat"
+                      aria-label="Select auction format"
                       className="w-full p-2 border border-gray-300 rounded-md"
                       value={auctionFormat || ''}
                       onChange={(e: ChangeEvent<HTMLSelectElement>) => {
@@ -452,6 +437,7 @@ const ProductListingForm: React.FC = () => {
                               onChange={(date) => handleStartDateChange(date, field)}
                               isRequired
                               hideTimeZone
+                              aria-label="Auction start date and time"
                               minValue={today(getLocalTimeZone())}
                               
                             />

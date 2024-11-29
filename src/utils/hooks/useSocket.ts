@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { Message } from '../../interface/chatTypes/chat';
 
-const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL;
+// const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL;
 
 
 export const useSocket = () => {
@@ -14,7 +14,7 @@ export const useSocket = () => {
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
   useEffect(() => {
-    const newSocket = io(SOCKET_SERVER_URL, {
+    const newSocket = io('wss://backend.loomfashion.online', {
       path: "/api/socket.io",
       withCredentials: true,
       transports: ['websocket', 'polling']

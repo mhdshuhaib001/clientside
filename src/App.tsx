@@ -39,7 +39,7 @@ const App: React.FC = () => {
 
     setInitialLoad(false);
   }, []);
-
+// notification shwoing areaa 
   onMessageListener().then((payload) => {
     const notificationPayload = payload as FCMNotificationPayload;
     toast.custom((_t) => (
@@ -64,7 +64,6 @@ const App: React.FC = () => {
             <Route path="/*" element={<ProtectedRoute><UserRoutes /></ProtectedRoute>} />
             <Route path="/admin/*" element={<AdminRoutes />} />
             <Route path="*" element={<Error />} />
-
           </Routes>
         </Suspense>
         </ErrorBoundary>
