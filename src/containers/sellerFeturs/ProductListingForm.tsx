@@ -426,7 +426,7 @@ const ProductListingForm: React.FC = () => {
                   {auctionFormat === 'auction' && (
                     <div className="mb-4 space-y-4">
                       <div>
-                        <label className="block text-gray-700 text-sm mb-2">
+                        <label id="start-date-label" className="block text-gray-700 text-sm mb-2">
                           Auction Start Date & Time:
                         </label>
                         <Field name="auctionStartDateTime">
@@ -437,8 +437,8 @@ const ProductListingForm: React.FC = () => {
                               onChange={(date) => handleStartDateChange(date, field)}
                               isRequired
                               hideTimeZone
-                              aria-label="Auction start date and time"
-                              minValue={today(getLocalTimeZone())}
+                              aria-labelledby="start-date-label"
+                              aria-label="Select auction start date and time"                               minValue={today(getLocalTimeZone())}
                               
                             />
                           )}
@@ -451,7 +451,7 @@ const ProductListingForm: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block text-gray-700 text-sm mb-2">
+                        <label id="end-date-label" className="block text-gray-700 text-sm mb-2">
                           Auction End Date & Time:
                         </label>
                         <Field name="auctionEndDateTime">
@@ -462,6 +462,8 @@ const ProductListingForm: React.FC = () => {
                               onChange={(date) => handleEndDateChange(date, field)}
                               isRequired
                               minValue={today(getLocalTimeZone())}
+                              aria-labelledby="end-date-label"  
+        aria-label="Select auction end date and time" 
                               />
                           )}
                         </Field>
