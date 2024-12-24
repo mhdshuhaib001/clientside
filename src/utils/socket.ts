@@ -1,39 +1,12 @@
 import { io, Socket } from 'socket.io-client';
 
-// class SocketConnection {
-//   private static instance: Socket | null = null;
-
-//   static getInstance(): Socket {
-//     if (!this.instance) {
-//       this.instance = io(import.meta.env.VITE_SERVER_URL, {
-//         withCredentials: true,
-//         reconnection: true,
-//         reconnectionAttempts: 5,
-//         reconnectionDelay: 1000,
-//         timeout: 5000,
-//         transports: ['websocket', 'polling']
-//       });
-
-//       this.instance.on('connect', () => {
-//         console.log('Socket connected successfully:', this.instance?.id);
-//       });
-
-//       this.instance.on('connect_error', (error) => {
-//         console.error('Socket connection error:', error);
-//       });
-//     }
-//     return this.instance;
-//   }
-// }
-
-// export default SocketConnection;import { io, Socket } from 'socket.io-client';
 
 class SocketConnection {
   private static instance: Socket | null = null;
 
   static getInstance(): Socket {
     if (!this.instance) {
-      this.instance = io('https://backend.loomfashion.online', {
+      this.instance = io(import.meta.env.VITE_SERVER_URL, {
         path: '/socket.io',
         transports: ['websocket', 'polling'],
         withCredentials: true,

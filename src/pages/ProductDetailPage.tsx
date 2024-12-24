@@ -12,9 +12,11 @@ import { ProductType } from '../interface/productTypes/productType';
 import toast from 'react-hot-toast';
 import Footer from '../components/User/Footer';
 import SellerProfileCard from '../components/Seller/SellerProfileCard';
+import RelatedProducts from '../components/commen/RelatedProducts';
 import { useNavigate } from 'react-router-dom';
 import { Package } from 'lucide-react';
-
+// import ImageGallerySkeleton from '../components/commen/Skelton/ImageSkelton'
+import ProductPageSkeleton from '../components/commen/Skelton/ProductPageSkelton';
 type ProductImage = {
   src: string;
   alt: string;
@@ -31,9 +33,10 @@ export default function ProductPage() {
   const [productData, setProductData] = useState<ProductType | null>(null);
   const [subscribeNotification] = useSubscribeNotificationMutation();
   const { id } = useParams<{ id: string }>();
-  const { data, error: apiError } = useGetProductByIdQuery(id);
+  const { data, error: apiError, isLoading } = useGetProductByIdQuery(id);
   const navigate = useNavigate();
   const [showFullDetails, setShowFullDetails] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
 
   useEffect(() => {
     if (data) {
@@ -74,13 +77,24 @@ export default function ProductPage() {
 
   useEffect(() => {
     if (productData?.images?.length) {
-      setMainImage({ src: productData.images[0], alt: 'Main product image' });
+      const mainImageSrc = productData.images[0];
+      const img = new Image();
+      img.src = mainImageSrc;
+      img.onload = () => {
+        setMainImage({ src: mainImageSrc, alt: 'Main product image' });
+        setImagesLoaded(true);
+      };
+      img.onerror = () => {
+        setImagesLoaded(true);
+      };
+    } else {
+      setImagesLoaded(true);
     }
   }, [productData]);
 
   // Calculate the time left
   const auctionStartDate = new Date(productData?.auctionStartDateTime || Date.now());
-  // const auctionEndDate = new Date(productData?.auctionEndDateTime || Date.now());
+  const auctionEndDate = new Date(productData?.auctionEndDateTime || Date.now());
   const isAuctionStarted = Date.now() >= auctionStartDate.getTime();
   const auctionStatus = productData?.auctionStatus;
 
@@ -127,6 +141,29 @@ export default function ProductPage() {
     if (productData) {
       navigate(`/checkout/${productData._id}`);
     }
+  }
+
+  // if (isLoading || !imagesLoaded) {
+  //   return (
+  //     <>
+  //       <Header />
+  //       <div className="container mx-auto px-4 py-8 bg-main-bg">
+  //         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+  //           <ImageGallerySkeleton />
+  //             <div className="space-y-4 animate-pulse">
+  //             <div className="h-10 bg-gray-300 rounded w-3/4"></div>
+  //             <div className="h-20 bg-gray-300 rounded"></div>
+  //             <div className="h-12 bg-gray-300 rounded w-1/2"></div>
+  //           </div>
+  //         </div>
+  //       </div>
+  //       <Footer />
+  //     </>
+  //   );
+  // }
+
+  if (isLoading || !imagesLoaded) {
+    return <ProductPageSkeleton />;
   }
 
   return (
@@ -194,44 +231,70 @@ export default function ProductPage() {
               )}
             </div>
             {productData?.auctionFormat !== 'buy-it-now' && (
-              <div className="bg-white p-4 rounded-lg">
-                {isAuctionStarted ? (
-                  <div className="bg-yellow-50 p-6 rounded-lg shadow-lg border border-amber-4 00">
-                    <h2 className="text-2xl font-serif text-center mb-4 text-brown-800">
-                      Time Left
-                    </h2>
-                    <div className="flex justify-around">
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-brown-600">{daysLeft}</div>
-                        <div className="text-sm text-gray-600">Days</div>
+              <>
+                {!['sold', 'ended', 'unsold'].includes(auctionStatus || '') && (
+                  <div className="bg-white p-4 rounded-lg">
+                    {auctionStatus === 'upcoming' ? (
+                      <div className="bg-amber-50 p-6 rounded-lg shadow-lg border border-amber-400">
+                        <div className="space-y-3 text-center">
+                          <div>
+                            <span className="font-semibold">Auction Start Time:</span>{' '}
+                            {auctionStartDate.toLocaleString()}
+                          </div>
+                          <div>
+                            <span className="font-semibold">Auction End Time:</span>{' '}
+                            {auctionEndDate.toLocaleString()}
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-brown-600">{hoursLeft}</div>
-                        <div className="text-sm text-gray-600">Hours</div>
+                    ) : isAuctionStarted ? (
+                      <div className="bg-yellow-50 p-6 rounded-lg shadow-lg border border-amber-400">
+                        <h2 className="text-2xl font-serif text-center mb-4 text-brown-800">
+                          Time Left
+                        </h2>
+                        <div className="flex justify-around">
+                          <div className="text-center">
+                            <div className="text-4xl font-bold text-brown-600">{daysLeft}</div>
+                            <div className="text-sm text-gray-600">Days</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-4xl font-bold text-brown-600">{hoursLeft}</div>
+                            <div className="text-sm text-gray-600">Hours</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-4xl font-bold text-brown-600">{minutesLeft}</div>
+                            <div className="text-sm text-gray-600">Minutes</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-4xl font-bold text-brown-600">{secondsLeft}</div>
+                            <div className="text-sm text-gray-600">Seconds</div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-brown-600">{minutesLeft}</div>
-                        <div className="text-sm text-gray-600">Minutes</div>
+                    ) : (
+                      <div className="text-lg font-semibold text-center">
+                        Auction starts on:{' '}
+                        <span className="font-bold">{auctionStartDate.toLocaleString()}</span>
                       </div>
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-brown-600">{secondsLeft}</div>
-                        <div className="text-sm text-gray-600">Seconds</div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-lg font-semibold text-center">
-                    Auction starts on:{' '}
-                    <span className="font-bold">{auctionStartDate.toLocaleString()}</span>
+                    )}
                   </div>
                 )}
-                <div className="text-medium font-semibold mb-3">
-                  Ending On:{' '}
-                  {productData?.auctionEndDateTime
-                    ? new Date(productData.auctionEndDateTime).toLocaleString()
-                    : 'N/A'}
-                </div>
-              </div>
+                {auctionStatus === 'unsold' && (
+                  <div className="flex items-center p-4 bg-gray-100 border border-gray-400 text-gray-700 rounded-lg">
+                    <Package className="mr-2" size={24} />
+                    <div>
+                      <h3 className="font-bold">Auction Completed</h3>
+                      <p>This item did not meet the reserve price and was not sold.</p>
+                      {productData?.auctionEndDateTime && (
+                        <p className="text-sm mt-1">
+                          Auction ended on:{' '}
+                          {new Date(productData.auctionEndDateTime).toLocaleString()}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}{' '}
+              </>
             )}
             <div className="space-y-2">
               {productData?.auctionFormat === 'buy-it-now' ? (
@@ -241,12 +304,23 @@ export default function ProductPage() {
                 >
                   Buy Now
                 </button>
-              ) : auctionStatus === 'sold' ? (
+              ) : ['sold', 'ended'].includes(auctionStatus || '') ? (
                 <div className="flex items-center p-4 bg-red-100 border border-amber-400 text-red-700 rounded-lg">
                   <Package className="mr-2" size={24} />
                   <div>
                     <h3 className="font-bold">Auction Ended</h3>
-                    <p>The item has been sold. Thank you for your interest!</p>
+                    <p>
+                      {auctionStatus === 'sold'
+                        ? 'The item has been sold.'
+                        : auctionStatus === 'ended'
+                          ? 'This auction has ended.'
+                          : ''}
+                    </p>
+                    {productData?.auctionEndDateTime && (
+                      <p className="text-sm mt-1">
+                        Ended on: {new Date(productData.auctionEndDateTime).toLocaleString()}
+                      </p>
+                    )}
                   </div>
                 </div>
               ) : !isAuctionStarted ? (
@@ -256,14 +330,14 @@ export default function ProductPage() {
                 >
                   Notify Me When Auction Starts
                 </button>
-              ) : (
+              ) : auctionStatus === 'live' ? (
                 <button
-                  onClick={() => navigate(`/auction-page/${productData?._id}`)}
-                  className="w-full bg-amber-800 border-amber-300 text-white py-2 rounded hover:bg-amber-700 transition duration-300"
-                >
-                  Enter To Bid
-                </button>
-              )}
+                onClick={() => navigate(`/auction-page/${productData?._id}`)}
+                className="w-full bg-amber-800 border-amber-300 text-white py-2 rounded hover:bg-amber-700 transition duration-300"
+              >
+                Enter To Bid
+              </button>
+              ) : null}
               {showNotificationModal && (
                 <NotificationMethodSelector
                   isOpen={showNotificationModal}
@@ -272,8 +346,9 @@ export default function ProductPage() {
                 />
               )}
             </div>
+
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold">Shipping & Returns:</h2>
+              <h2 className="text-lg font-semibold">Shipping :</h2>
               <p>{productData?.shippingType || 'Standard'}</p>
               <p>
                 {productData?.returnPolicy || '10 days returns. Buyer pays for return shipping'}
@@ -341,6 +416,7 @@ export default function ProductPage() {
             )}
           </div>
         </div> */}
+        {/* <RelatedProducts /> */}
       </div>
       <Footer />
     </>

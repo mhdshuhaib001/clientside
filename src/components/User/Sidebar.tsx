@@ -50,13 +50,13 @@ const Sidebar: React.FC = () => {
             <Package size={20} className="mr-2" />
             My Orders 
           </Link>
-          <a
+          {/* <a
             href="#payments"
             className="text-white hover:bg-gray-700 hover:text-gray-200 p-2 rounded transition duration-200 flex items-center"
           >
             <CreditCard size={20} className="mr-2" />
             Payments
-          </a>
+          </a> */}
           <a
             href="/profile/change-password"
             className="text-white hover:bg-gray-700 hover:text-gray-200 p-2 rounded transition duration-200 flex items-center"
@@ -66,7 +66,7 @@ const Sidebar: React.FC = () => {
           </a>
           <a
             onClick={handleLogout}
-            className="text-white bg-gray-600 hover:bg-gray-500 hover:text-gray-100 p-2 rounded transition duration-200 flex items-center"
+            className="text-white bg-gray-600 hover:bg-gray-500 hover:text-gray-100 p-2 rounded transition duration-200 flex items-center cursor-pointer"
           >
             <LogOut size={20} className="mr-2" />
             LogOut

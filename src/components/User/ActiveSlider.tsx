@@ -15,7 +15,7 @@ interface ProductSliderProps {
 
 const ProductSlider: React.FC<ProductSliderProps> = ({ products, isLoading }) => {
   const limitedProducts = Array.isArray(products) ? products.slice(0, 9) : [];
-  
+
   return (
     <div className="relative">
       <Swiper
@@ -52,14 +52,15 @@ const ProductSlider: React.FC<ProductSliderProps> = ({ products, isLoading }) =>
               <AuctionItem
                 product={{
                   id: product._id ?? '',
-                  imageUrl: typeof product.images?.[0] === 'string'
-                    ? product.images?.[0]
-                    : '/placeholder-image.jpg',
+                  imageUrl:
+                    typeof product.images?.[0] === 'string'
+                      ? product.images?.[0]
+                      : '/placeholder-image.jpg',
                   name: product.itemTitle ?? 'No Name',
                   currentBid: Number(product.reservePrice) || 0,
+                  auctionStatus: product.auctionStatus,
                 }}
                 auctionEndTime={product.auctionEndDateTime}
-                status={product.auctionStatus}
                 auctionFormat={product.auctionFormat}
               />
             </SwiperSlide>
@@ -70,7 +71,7 @@ const ProductSlider: React.FC<ProductSliderProps> = ({ products, isLoading }) =>
           </SwiperSlide>
         )}
       </Swiper>
-  
+
       {/* Custom Pagination Container */}
       <div className="swiper-pagination-custom flex justify-center space-x-2 mt-4">
         <span className="swiper-pagination-bullet w-3 h-3 bg-orange-500 rounded-full"></span>
@@ -79,7 +80,6 @@ const ProductSlider: React.FC<ProductSliderProps> = ({ products, isLoading }) =>
       </div>
     </div>
   );
-  
 };
 
 export default ProductSlider;

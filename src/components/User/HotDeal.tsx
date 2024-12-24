@@ -151,7 +151,7 @@ const HotDeals: React.FC<{ products: ProductType[]; isLoading: boolean }> = ({
     return (
       <div className="container mx-auto p-4">
         <div className="text-center text-gray-500">
-          {isLoading ? 'Loading hot deals...' : 'No live auctions available'}
+          {isLoading ? 'Loading hot deals...' : ' '}
         </div>
       </div>
     );

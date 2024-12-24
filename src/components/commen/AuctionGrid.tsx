@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter} from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import { useProductsData } from '../../utils/hooks/useProductsData';
 import AuctionItem from '../User/AuctionItemComponent';
 import { ProductType } from '../../interface/productTypes/productType';
@@ -259,7 +259,6 @@ export default function Component() {
                     }}
                     auctionEndTime={item.auctionEndDateTime}
                     auctionStartTime={item.auctionStartDateTime}
-                    status={getAuctionStatus(item)}
                     auctionFormat={item.auctionFormat}
                   />
                 ))}
@@ -272,7 +271,7 @@ export default function Component() {
                   className={`px-4 py-2 border-2 border-[#C4A484] bg-[#FFF8F0] text-sm font-medium text-[#4A3728] ${page === currentPage ? 'bg-amber-600 text-white' : ''}`}
                   onClick={() => handlePageChange(page)}
                   whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                  whileTap={{ scale: 0.9 }}x
                 >
                   {page}
                 </motion.button>

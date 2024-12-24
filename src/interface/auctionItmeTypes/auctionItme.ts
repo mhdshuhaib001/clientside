@@ -1,12 +1,12 @@
 export default interface AuctionItemProps {
   product: {
     id: string;
-    imageUrl?:any;
+    imageUrl: string;
     name: string;
-    currentBid: Number | string;
+    currentBid: number;
+    auctionStatus?: "sold" | "ended" | "live" | "upcoming" | "relisted" | "unsold";
   };
-  auctionEndTime?: string | null;
-  status: 'live' | 'upcoming' | 'end' | 'sold'|'relisted';
-  auctionFormat: string;
-  auctionStartTime?:string|null
+  auctionEndTime?: string;
+  auctionStartTime?: string;
+  auctionFormat?: string;
 }

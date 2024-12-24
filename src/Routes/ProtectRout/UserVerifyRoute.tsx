@@ -12,12 +12,12 @@ const UserProtectedRoute: React.FC<ProtectedRouteProps> = ({ element: Component 
 
   useEffect(() => {
     if (!token) {
-      navigate('/signup');  
+      navigate('/registration');  
     }
   }, [token, navigate]);
 
   if (!token) {
-    return <div>Redirecting to signup...</div>; // Optional fallback
+    return <div>Redirecting to signup...</div>;
   }
 
   return <Component />;

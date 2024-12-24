@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface SellerState {
+  companyName: any;
   sellerId: string;
   sellerToken: string;
 }

@@ -1,3 +1,4 @@
+
 // import { Clock } from 'lucide-react';
 // import React, { useState, useEffect } from 'react';
 // import { useNavigate } from 'react-router-dom';
@@ -53,22 +54,23 @@
 //     }
 //   }, [auctionEndTime]);
 
-//   useEffect(() => {
-//     const checkAuctionStart = () => {
-//       if (auctionStartTime) {
-//         const auctionStartDateTime = new Date(auctionStartTime).getTime();
-//         const now = Date.now();
+// useEffect(() => {
+//   const checkAuctionStart = () => {
+//     if (auctionStartTime) {
+//       const auctionStartDateTime = new Date(auctionStartTime);
+//       const now = new Date();
 
-//         if (now >= auctionStartDateTime && currentStatus !== 'live') {
-//           setCurrentStatus('live');
-//         } 
+//       // More precise comparison using Date objects
+//       if (now >= auctionStartDateTime && currentStatus !== 'live') {
+//         setCurrentStatus('live');
 //       }
-//     };
+//     }
+//   };
 
-//     const startCheckInterval = setInterval(checkAuctionStart, 1000);
+//   const startCheckInterval = setInterval(checkAuctionStart, 1000);
 
-//     return () => clearInterval(startCheckInterval);
-//   }, [auctionStartTime, currentStatus]);
+//   return () => clearInterval(startCheckInterval);
+// }, [auctionStartTime, currentStatus]);
 
 //   const handleBidClick = () => {
 //     navigate(`/product-details/${product.id}`);
@@ -82,15 +84,15 @@
 //     <div className="w-64 rounded-lg overflow-hidden shadow-lg bg-white flex flex-col">
 //       <div className="relative h-60">
 //         <img className="w-full h-full object-cover" src={product.imageUrl} alt={product.name} />
-//         {auctionFormat!=='buy-it-now'&&(
-//         <div
-//           className={`absolute top-1 left-1 bg-${currentStatus === 'live' ? 'red-600' : currentStatus === 'upcoming' ? 'blue-600' : currentStatus === 'end' ? 'gray-600' : 'gray-600'} text-white px-1.5 py-0.5 rounded-full flex items-center`}
-//         >
-//           <Clock className="w-3 h-3 mr-0.5" />
-//           <span className="text-xs font-bold">
-//             {currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1)}
-//           </span>
-//         </div>
+//         {auctionFormat !== 'buy-it-now' && (
+//           <div
+//             className={`absolute top-1 left-1 bg-${currentStatus === 'live' ? 'red-600' : currentStatus === 'upcoming' ? 'blue-600' : currentStatus === 'end' ? 'gray-600' : 'gray-600'} text-white px-1.5 py-0.5 rounded-full flex items-center`}
+//           >
+//             <Clock className="w-3 h-3 mr-0.5" />
+//             <span className="text-xs font-bold">
+//               {currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1)}
+//             </span>
+//           </div>
 //         )}
 //         {auctionFormat === 'auction' && currentStatus === 'live' && (
 //           <div className="absolute bottom-1 left-1 right-1 bg-white bg-opacity-70 rounded-sm text-black p-1">
@@ -133,7 +135,7 @@
 //             <>
 //               <p className="text-gray-700 text-xs">Current Bid at:</p>
 //               <p className="text-lg font-bold">${product.currentBid.toLocaleString()}</p>
-         
+
 //               {currentStatus === 'live' && (
 //                 <button
 //                   onClick={handleBidClick}
@@ -158,6 +160,20 @@
 //                   View Results
 //                 </button>
 //               )}
+//               {currentStatus === 'sold' && (
+//                 <button
+//                 onClick={handleBidClick}
+//                 className="bg-green-300 hover:bg-green-200 text-green-900 font-bold py-1 px-2 rounded w-full mt-1 border border-green-200">view
+//                   </button>
+//               )}
+//               {currentStatus ==='upcoming' &&(
+//                     <button
+//                     onClick={handleBidClick}
+//                     className="bg-gray-300 hover:bg-gray-200 text-gray-900 font-bold py-1 px-2 rounded w-full mt-1 border border-gray-200"
+//                   >
+//                     View Results
+//                   </button>
+//               )}
 //             </>
 //           )}
 //         </div>
@@ -171,6 +187,7 @@
 
 
 
+
 import { Clock } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -178,14 +195,11 @@ import AuctionItemProps from '../../interface/auctionItmeTypes/auctionItme';
 
 const AuctionItem: React.FC<AuctionItemProps> = ({
   product,
-  auctionStartTime,
   auctionEndTime,
-  status,
   auctionFormat,
 }) => {
   const navigate = useNavigate();
-  const [currentStatus, setCurrentStatus] = useState(status);
-
+  const currentStatus = product.auctionStatus || 'unsold';
   const calculateTimeLeft = (endTime: string) => {
     if (!endTime) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
 
@@ -210,38 +224,29 @@ const AuctionItem: React.FC<AuctionItemProps> = ({
       const timerInterval = setInterval(() => {
         const newTimeLeft = calculateTimeLeft(auctionEndTime);
         setTimeLeft(newTimeLeft);
-
-        if (
-          newTimeLeft.days === 0 &&
-          newTimeLeft.hours === 0 &&
-          newTimeLeft.minutes === 0 &&
-          newTimeLeft.seconds === 0
-        ) {
-          setCurrentStatus('end');
-          clearInterval(timerInterval);
-        }
       }, 1000);
 
       return () => clearInterval(timerInterval);
     }
   }, [auctionEndTime]);
 
-  useEffect(() => {
-    const checkAuctionStart = () => {
-      if (auctionStartTime) {
-        const auctionStartDateTime = new Date(auctionStartTime).getTime();
-        const now = Date.now();
+// useEffect(() => {
+//   const checkAuctionStart = () => {
+//     if (auctionStartTime) {
+//       const auctionStartDateTime = new Date(auctionStartTime);
+//       const now = new Date();
 
-        if (now >= auctionStartDateTime && currentStatus !== 'live') {
-          setCurrentStatus('live');
-        }
-      }
-    };
+//       // More precise comparison using Date objects
+//       if (now >= auctionStartDateTime && currentStatus !== 'live') {
+//         setCurrentStatus('live');
+//       }
+//     }
+//   };
 
-    const startCheckInterval = setInterval(checkAuctionStart, 1000);
+//   const startCheckInterval = setInterval(checkAuctionStart, 1000);
 
-    return () => clearInterval(startCheckInterval);
-  }, [auctionStartTime, currentStatus]);
+//   return () => clearInterval(startCheckInterval);
+// }, [auctionStartTime, currentStatus]);
 
   const handleBidClick = () => {
     navigate(`/product-details/${product.id}`);
@@ -257,7 +262,7 @@ const AuctionItem: React.FC<AuctionItemProps> = ({
         <img className="w-full h-full object-cover" src={product.imageUrl} alt={product.name} />
         {auctionFormat !== 'buy-it-now' && (
           <div
-            className={`absolute top-1 left-1 bg-${currentStatus === 'live' ? 'red-600' : currentStatus === 'upcoming' ? 'blue-600' : currentStatus === 'end' ? 'gray-600' : 'gray-600'} text-white px-1.5 py-0.5 rounded-full flex items-center`}
+            className={`absolute top-1 left-1 bg-${currentStatus === 'live' ? 'red-600' : currentStatus === 'upcoming' ? 'blue-600' : currentStatus === 'ended' ? 'gray-600' : 'gray-600'} text-white px-1.5 py-0.5 rounded-full flex items-center`}
           >
             <Clock className="w-3 h-3 mr-0.5" />
             <span className="text-xs font-bold">
@@ -323,7 +328,7 @@ const AuctionItem: React.FC<AuctionItemProps> = ({
                   Notify Me
                 </button>
               )}
-              {currentStatus === 'end' && (
+              {currentStatus === 'ended' || currentStatus==='unsold'&& (
                 <button
                   onClick={handleBidClick}
                   className="bg-gray-300 hover:bg-gray-200 text-gray-900 font-bold py-1 px-2 rounded w-full mt-1 border border-gray-200"
@@ -331,6 +336,13 @@ const AuctionItem: React.FC<AuctionItemProps> = ({
                   View Results
                 </button>
               )}
+              {currentStatus === 'sold' && (
+                <button
+                onClick={handleBidClick}
+                className="bg-green-300 hover:bg-green-200 text-green-900 font-bold py-1 px-2 rounded w-full mt-1 border border-green-200">view
+                  </button>
+              )}
+          
             </>
           )}
         </div>

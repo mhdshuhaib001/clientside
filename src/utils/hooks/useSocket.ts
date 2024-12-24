@@ -9,44 +9,40 @@ export const useSocket = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [typingUsers, setTypingUsers] = useState<{ [key: string]: boolean }>({});
-  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+  const [onlineUsers, setOnlineUsers] = useState<{
+    id: string;
+    role?: string;
+  }[]>([]);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
   useEffect(() => {
-    const newSocket = io('https://backend.loomfashion.online', {
+    const newSocket = io(import.meta.env.VITE_SERVER_URL, {
       path: "/socket.io",
       withCredentials: true,
       transports: ['websocket', 'polling']
     });
+    
     newSocket.on('connect', () => {
       console.log('Socket connected....');
-      
     });
 
-
-    
-    newSocket.on('user_online', (userId: string) => {
-      setOnlineUsers((prev) => [...new Set([...prev, userId])]);
+    newSocket.on('user_online', (userData: { userId: string; role?: string }) => {
+      console.log('User online event received:', userData);
+      setOnlineUsers((prev) => {
+        const filteredUsers = prev.filter(user => user.id !== userData.userId);
+        const updatedUsers = [...filteredUsers, { 
+          id: userData.userId, 
+          role: userData.role 
+        }];
+        console.log('Updated online users:', updatedUsers);
+        return updatedUsers;
+      });
     });
 
     newSocket.on('user_offline', (userId: string) => {
-      setOnlineUsers((prev) => prev.filter((id) => id !== userId));
+      setOnlineUsers((prev) => prev.filter((user) => user.id !== userId));
     });
-
-
-
-    
-    // New message notification listener
-    // newSocket.on('new_message_notification', (notification) => {
-    //   console.log('Frontend received notification:', notification);
-    //   setUnreadNotificationsCount((prev) => prev + 1);
-    //   setNotifications((prev) => [...prev, { ...notification, isRead: false }]);
-    //   console.log('haloooo',unreadNotificationsCount,notifications)
-
-    // });
-
-
 
     newSocket.on('receive_message', (newMessage: Message) => {
       console.log('Received message in frontend:', newMessage);
@@ -65,6 +61,15 @@ export const useSocket = () => {
       });
     });
 
+  // New message notification listener
+    newSocket.on('new_message_notification', (notification) => {
+      console.log('Frontend received notification:', notification);
+      setUnreadNotificationsCount((prev) => prev + 1);
+      setNotifications((prev) => [...prev, { ...notification, isRead: false }]);
+      console.log('haloooo',unreadNotificationsCount,notifications)
+
+    });
+
     setSocket(newSocket);
 
     return () => {
@@ -73,11 +78,15 @@ export const useSocket = () => {
   }, []);
 
   const setUserOnline = useCallback(
-    (userId: string) => {
-      socket?.emit('user_connected', userId);
+    (userId: string, userRole?: string) => {
+      socket?.emit('user_connected', { 
+        userId, 
+        role: userRole 
+      });
     },
     [socket],
   );
+
 
   const sendMessage = useCallback(
     (message: Message) => {

@@ -437,7 +437,7 @@ export default function HeroSection() {
                 className="mt-10 flex items-center justify-center gap-x-6"
               >
                 <motion.a
-                  href="#start-bidding"
+                  href="/auction-items"
                   className="rounded-md bg-gray-700 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-gray-600"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}

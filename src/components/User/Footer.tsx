@@ -56,7 +56,7 @@ const Footer: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail size={16} className="text-orange-300" />
-                  <span>contact@heritage.com</span>
+                  <span>auctiongems.team.@gmail.com</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock size={16} className="text-orange-300" />
@@ -86,12 +86,12 @@ const Footer: React.FC = () => {
                 </button>
               </div>
               <div className="flex gap-2">
-                {['visa', 'mastercard', 'amex'].map((card) => (
+                {['paypal', 'mastercard', 'stripe'].map((card) => (
                   <div key={card} className="bg-white/10 rounded-md p-2 w-14 h-8 flex items-center justify-center">
                     <img
-                      src={`/payment-icons/${card}.svg`}
+                      src={`/svg/icons/${card}.svg`}
                       alt={card}
-                      className="max-h-4"
+                      className="max-h-6"
                     />
                   </div>
                 ))}

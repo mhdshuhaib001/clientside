@@ -171,7 +171,7 @@ const SignupForm: React.FC<{
                   className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.password && touched.password ? 'border-red-500' : ''}`}
                 />
 
-                <button onClick={()=>setShowPassword(!showPassword)} className='absolute right-2 top-3 text-gray-600'>{showPassword ? 'Hide':'Show'}</button>
+                {/* <button onClick={()=>setShowPassword(!showPassword)} className='absolute right-2 top-3 text-gray-600'>{showPassword ? 'Hide':'Show'}</button> */}
                 <ErrorMessage
                   name="password"
                   component="p"

@@ -31,8 +31,7 @@ const Header: React.FC = () => {
     markAsRead,
     markAllAsRead,
     clearNotifications,
-  } = useMessageNotification( );
-
+  } = useMessageNotification();
 
   useEffect(() => {
     if (messageNotifications.length > 0) {
@@ -40,11 +39,10 @@ const Header: React.FC = () => {
     }
   }, [messageNotifications]);
 
-useEffect(() => {
-  console.log("Message Notifications Updated:", messageNotifications);
-  console.log("Unread Count:", unreadCount);
-}, [messageNotifications, unreadCount]);
-
+  useEffect(() => {
+    console.log('Message Notifications Updated:', messageNotifications);
+    console.log('Unread Count:', unreadCount);
+  }, [messageNotifications, unreadCount]);
 
   useEffect(() => {
     setNotifications(notifications);
@@ -98,7 +96,7 @@ useEffect(() => {
 
           <button className="text-gray-600 hover:text-gray-900">Live Auction</button>
 
-          <button className="text-gray-600 hover:text-gray-900">About us</button>
+          <button onClick={()=>navigate('/about')} className="text-gray-600 hover:text-gray-900" >About us</button>
 
           {/* Regular Notifications */}
           <div className="relative">
@@ -146,67 +144,74 @@ useEffect(() => {
           </div>
 
           {/* Message Notifications */}
-          <div className="relative">
-            <button
-              className="text-gray-600 hover:text-gray-900 flex items-center"
-              onClick={() => setIsMessageDropdownOpen(!isMessageDropdownOpen)}
-              onMouseEnter={() => setIsMessageDropdownOpen(true)}
-              onMouseLeave={() => setIsDropdownOpen(false)}
-            >
-              <Bell size={24} />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  {unreadCount}
-                </span>
+
+          {token ? (
+            <div className="relative">
+              <button
+                className="text-gray-600 hover:text-gray-900 flex items-center"
+                onClick={() => setIsMessageDropdownOpen(!isMessageDropdownOpen)}
+                onMouseEnter={() => setIsMessageDropdownOpen(true)}
+                onMouseLeave={() => setIsDropdownOpen(false)}
+              >
+                <Bell size={24} />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+              {isMessageDropdownOpen && (
+                <MessageNotificationDropdown
+                  notifications={messageNotifications}
+                  lastNotification={lastNotification}
+                  onMarkAsRead={markAsRead}
+                  onMarkAllAsRead={markAllAsRead}
+                  onClear={clearNotifications}
+                  onClose={() => setIsMessageDropdownOpen(false)}
+                  onNotificationClick={(notification) =>
+                    handleNotificationClick(
+                      notification as { type: string; senderId: string; orderId?: string },
+                    )
+                  }
+                />
               )}
-            </button>
-            {isMessageDropdownOpen && (
-              <MessageNotificationDropdown
-                notifications={messageNotifications}
-                lastNotification={lastNotification}
-                onMarkAsRead={markAsRead}
-                onMarkAllAsRead={markAllAsRead}
-                onClear={clearNotifications}
-                onClose={() => setIsMessageDropdownOpen(false)}
-                onNotificationClick={(notification) =>
-                  handleNotificationClick(
-                    notification as { type: string; senderId: string; orderId?: string },
-                  )
-                }
-              />
-            )}
-            {/* Message Notifications Dropdown */}
-            {/* {isMessageDropdownOpen && (
-              <MessageNotificationDropdown
-                notifications={messageNotifications}
-                onMarkAsRead={markAsRead}
-                onMarkAllAsRead={markAllAsRead}
-                onClear={clearNotifications}
-                onClose={() => setIsMessageDropdownOpen(false)}
-                onNotificationClick={(notification) =>
-                  handleNotificationClick(
-                    notification as { type: string; senderId: string; orderId?: string },
-                  )
-                }
-              />
-            )} */}
-          </div>
+              {/* Message Notifications Dropdown */}
+              {/* {isMessageDropdownOpen && (
+     <MessageNotificationDropdown
+       notifications={messageNotifications}
+       onMarkAsRead={markAsRead}
+       onMarkAllAsRead={markAllAsRead}
+       onClear={clearNotifications}
+       onClose={() => setIsMessageDropdownOpen(false)}
+       onNotificationClick={(notification) =>
+         handleNotificationClick(
+           notification as { type: string; senderId: string; orderId?: string },
+         )
+       }
+     />
+   )} */}
+            </div>
+          ) : (
+            <div className="flex items-center space-x-4"></div>
+          )}
 
           {/* Chat Button */}
-          <button onClick={() => navigate('/chat')} className="text-gray-600 hover:text-gray-900">
-            <img
-              src="/svg/icons/chat.svg"
-              alt="Chat"
-              width={40}
-              height={20}
-              className="cursor-pointer"
-            />
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {unreadCount}
-              </span>
-            )}
-          </button>
+          {token && (
+            <button onClick={() => navigate('/chat')} className="text-gray-600 hover:text-gray-900">
+              <img
+                src="/svg/icons/chat.svg"
+                alt="Chat"
+                width={40}
+                height={20}
+                className="cursor-pointer"
+              />
+              {/* {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )} */}
+            </button>
+          )}
 
           {/* Profile/Register Button */}
           {token ? (

@@ -80,11 +80,12 @@ export default function RealTimeBidding() {
 
   // Socket Connection Effect
   useEffect(() => {
-    const socket = io('https://backend.loomfashion.online', {
-      path: "socket.io", 
+    const socket = io('http://localhost:8000', {
+      path: 'socket.io',
       withCredentials: true,
-      transports: ['websocket', 'polling']
-    });    socketRef.current = socket;
+      transports: ['websocket', 'polling'],
+    });
+    socketRef.current = socket;
 
     socket.on('connect', () => {
       socket.emit('join_auction', id, userId);
@@ -149,11 +150,11 @@ export default function RealTimeBidding() {
     }
   }, [productData, generateQuickBids]);
   useEffect(() => {
-    if (auctionData) {
-      console.log('Auction Data:', productData);
-      setAuctionStatus(productData.auctionStatus);
+    if (auctionData?.auctionStatus) {
+      setAuctionStatus(auctionData.auctionStatus);
     }
   }, [auctionData]);
+
   useEffect(() => {
     if (Array.isArray(auctionData)) {
       const fetchedBids = auctionData.map((bid: any) => ({
@@ -180,7 +181,7 @@ export default function RealTimeBidding() {
       console.error('Socket is not initialized.');
       return;
     }
-    if(userData.role === 'seller'){
+    if (userData.role === 'seller') {
       toast.error('You cannot place a bid on your own auction.');
       return;
     }
@@ -208,14 +209,14 @@ export default function RealTimeBidding() {
         avatar: userData.profileImage,
       });
 
-      await placeBid({
-        auctionId: id,
-        bidderId: userId,
-        currentBid: currentBid,
-        bidAmount: amount,
-        time: new Date(),
-        sellerId: sellerProfile?.sellerId,
-      }).unwrap();
+      // await placeBid({
+      //   auctionId: id,
+      //   bidderId: userId,
+      //   currentBid: currentBid,
+      //   bidAmount: amount,
+      //   time: new Date(),
+      //   sellerId: sellerProfile?.sellerId,
+      // }).unwrap();
 
       const updatedBid: Bid = {
         bidder: userData.name,
@@ -391,8 +392,9 @@ export default function RealTimeBidding() {
             </>
           ) : (
             <div className="flex justify-center items-center bg-red-100 border border-red-400 text-red-600 font-bold p-4 rounded-lg shadow-md">
-            Bidding is closed for this auction.
-          </div>          )}
+              Bidding is closed for this auction.
+            </div>
+          )}
         </div>
       </div>
       <AuctionResultModal
