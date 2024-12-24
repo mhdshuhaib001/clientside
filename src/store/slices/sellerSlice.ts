@@ -7,6 +7,7 @@ interface SellerState {
 }
 
 const initialState: SellerState = {
+  companyName:'',
   sellerId: '',
   sellerToken:'',
 };
