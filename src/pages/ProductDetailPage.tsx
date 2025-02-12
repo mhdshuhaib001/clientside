@@ -304,7 +304,7 @@ export default function ProductPage() {
                 >
                   Buy Now
                 </button>
-              ) : ['sold', 'ended'].includes(auctionStatus || '') ? (
+              ) : ['sold', 'ended', 'unsold'].includes(auctionStatus || '') ? (
                 <div className="flex items-center p-4 bg-red-100 border border-amber-400 text-red-700 rounded-lg">
                   <Package className="mr-2" size={24} />
                   <div>
@@ -314,7 +314,7 @@ export default function ProductPage() {
                         ? 'The item has been sold.'
                         : auctionStatus === 'ended'
                           ? 'This auction has ended.'
-                          : ''}
+                          : 'This item did not meet the reserve price and was not sold.'}
                     </p>
                     {productData?.auctionEndDateTime && (
                       <p className="text-sm mt-1">
@@ -332,11 +332,11 @@ export default function ProductPage() {
                 </button>
               ) : auctionStatus === 'live' ? (
                 <button
-                onClick={() => navigate(`/auction-page/${productData?._id}`)}
-                className="w-full bg-amber-800 border-amber-300 text-white py-2 rounded hover:bg-amber-700 transition duration-300"
-              >
-                Enter To Bid
-              </button>
+                  onClick={() => navigate(`/auction-page/${productData?._id}`)}
+                  className="w-full bg-amber-800 border-amber-300 text-white py-2 rounded hover:bg-amber-700 transition duration-300"
+                >
+                  Enter To Bid
+                </button>
               ) : null}
               {showNotificationModal && (
                 <NotificationMethodSelector
@@ -372,12 +372,13 @@ export default function ProductPage() {
             <div className="flex justify-between items-center border-t border-b py-2">
               <span className="font-semibold">Guaranteed Safe Checkout</span>
               <div className="flex space-x-2">
-                <img src="/svg/icons/stripe.png" alt="Visa" width={50} height={30} />
+                <img src="/svg/icons/stripe.svg" alt="Visa" width={50} height={30} />
                 <img src="/svg/icons/mastercard.svg" alt="Mastercard" width={50} height={30} />
                 <img src="/svg/icons/paypal.svg" alt="PayPal" width={50} height={30} />
               </div>
             </div>
           </div>
+          {/* public\Logos\visa-logo.png */}
         </div>
 
         {/* Tab Navigation */}

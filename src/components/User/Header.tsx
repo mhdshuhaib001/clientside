@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, MessageCircle, Bell } from 'lucide-react';
+import { User, MessageCircle, Bell, Menu, X } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/Store';
 import {
@@ -20,6 +20,7 @@ const Header: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMessageDropdownOpen, setIsMessageDropdownOpen] = useState(false);
   const [lastNotification, setLastNotification] = useState<MessageNotification | null>(null);
+  const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
 
   // Hooks
   const navigate = useNavigate();
@@ -64,6 +65,14 @@ const Header: React.FC = () => {
     setIsMessageDropdownOpen(false);
   };
 
+  const handleMobileChat = () => {
+    if (window.innerWidth < 768) {
+      setIsMobileChatOpen(!isMobileChatOpen);
+    } else {
+      navigate('/chat');
+    }
+  };
+
   // const handleRegularNotificationClick = () => {
   //   setIsModalOpen(true);
   //   setIsDropdownOpen(false);
@@ -89,134 +98,57 @@ const Header: React.FC = () => {
         <nav className="hidden md:flex space-x-4 items-center">
           <button
             onClick={() => navigate('/auction-items')}
-            className="text-gray-600 hover:text-gray-900"
+            className="text-gray-600 hover:text-gray-900 transition-colors"
           >
             Auction
           </button>
 
-          <button className="text-gray-600 hover:text-gray-900">Live Auction</button>
+          <button
+            onClick={() => navigate('/about')}
+            className="text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            About us
+          </button>
 
-          <button onClick={()=>navigate('/about')} className="text-gray-600 hover:text-gray-900" >About us</button>
-
-          {/* Regular Notifications */}
-          <div className="relative">
-            {/* <button
-              className="text-gray-600 hover:text-gray-900 flex items-center"
-              onClick={handleRegularNotificationClick}
-              onMouseEnter={() => setIsDropdownOpen(true)}
-              onMouseLeave={() => setIsDropdownOpen(false)}
-            >
-              <Bell size={24} />
-              {notifications.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  {notifications.length}
-                </span>
-              )}
-            </button> */}
-
-            {/* Regular Notifications Dropdown */}
-            {/* {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-300 rounded-md shadow-lg z-10">
-                {notifications.length > 0 ? (
-                  notifications.map((notification) => (
-                    <div
-                      key={notification.id}
-                      className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100 cursor-pointer"
-                      onClick={handleRegularNotificationClick}
-                    >
-                      <img
-                        src={notification.image}
-                        alt={notification.productName}
-                        className="w-12 h-12 rounded-md mr-2"
-                      />
-                      <div className="flex-1">
-                        <div className="font-semibold">{notification.productName}</div>
-                        <div className="text-sm">Current Bid: ${notification.currentBid}</div>
-                        <div className="text-xs text-gray-500">{notification.status}</div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="px-4 py-2 text-gray-600">No new notifications</div>
+          {token && (
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <button
+                  className="text-gray-600 hover:text-gray-900 flex items-center transition-colors"
+                  onClick={() => setIsMessageDropdownOpen(!isMessageDropdownOpen)}
+                >
+                  <Bell size={24} />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+                {isMessageDropdownOpen && (
+                  <MessageNotificationDropdown
+                    notifications={messageNotifications}
+                    lastNotification={lastNotification}
+                    onMarkAsRead={markAsRead}
+                    onMarkAllAsRead={markAllAsRead}
+                    onClear={clearNotifications}
+                    onClose={() => setIsMessageDropdownOpen(false)}
+                    // onNotificationClick={handleNotificationClick}
+                  />
                 )}
               </div>
-            )} */}
-          </div>
 
-          {/* Message Notifications */}
-
-          {token ? (
-            <div className="relative">
               <button
-                className="text-gray-600 hover:text-gray-900 flex items-center"
-                onClick={() => setIsMessageDropdownOpen(!isMessageDropdownOpen)}
-                onMouseEnter={() => setIsMessageDropdownOpen(true)}
-                onMouseLeave={() => setIsDropdownOpen(false)}
+                onClick={handleMobileChat}
+                className="text-gray-600 hover:text-gray-900 transition-colors"
               >
-                <Bell size={24} />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {unreadCount}
-                  </span>
-                )}
+                <MessageCircle size={24} />
               </button>
-              {isMessageDropdownOpen && (
-                <MessageNotificationDropdown
-                  notifications={messageNotifications}
-                  lastNotification={lastNotification}
-                  onMarkAsRead={markAsRead}
-                  onMarkAllAsRead={markAllAsRead}
-                  onClear={clearNotifications}
-                  onClose={() => setIsMessageDropdownOpen(false)}
-                  onNotificationClick={(notification) =>
-                    handleNotificationClick(
-                      notification as { type: string; senderId: string; orderId?: string },
-                    )
-                  }
-                />
-              )}
-              {/* Message Notifications Dropdown */}
-              {/* {isMessageDropdownOpen && (
-     <MessageNotificationDropdown
-       notifications={messageNotifications}
-       onMarkAsRead={markAsRead}
-       onMarkAllAsRead={markAllAsRead}
-       onClear={clearNotifications}
-       onClose={() => setIsMessageDropdownOpen(false)}
-       onNotificationClick={(notification) =>
-         handleNotificationClick(
-           notification as { type: string; senderId: string; orderId?: string },
-         )
-       }
-     />
-   )} */}
             </div>
-          ) : (
-            <div className="flex items-center space-x-4"></div>
           )}
 
-          {/* Chat Button */}
-          {token && (
-            <button onClick={() => navigate('/chat')} className="text-gray-600 hover:text-gray-900">
-              <img
-                src="/svg/icons/chat.svg"
-                alt="Chat"
-                width={40}
-                height={20}
-                className="cursor-pointer"
-              />
-              {/* {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  {unreadCount}
-                </span>
-              )} */}
-            </button>
-          )}
-
-          {/* Profile/Register Button */}
           {token ? (
             <button
-              className="flex items-center bg-[#975f26] text-[#f7efc1] hover:text-[#e5cc6f] py-1 px-4 rounded-md hover:bg-[#663f21] focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50 transition duration-300 ml-4"
+              className="flex items-center bg-[#975f26] text-[#f7efc1] hover:text-[#e5cc6f] py-2 px-4 rounded-md hover:bg-[#663f21] transition-colors"
               onClick={() => navigate('/profile/dashboard')}
             >
               <User size={20} className="mr-2" />
@@ -225,7 +157,7 @@ const Header: React.FC = () => {
           ) : (
             <button
               onClick={() => navigate('/registration')}
-              className="bg-[#975f26] text-white py-1 px-4 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50 transition duration-300 ml-4"
+              className="bg-[#975f26] text-white py-2 px-4 rounded-md hover:bg-[#663f21] transition-colors"
             >
               Register
             </button>
@@ -233,54 +165,83 @@ const Header: React.FC = () => {
         </nav>
 
         {/* Mobile Menu Button */}
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center space-x-4">
+          {token && (
+            <>
+              <button
+                className="text-gray-600 hover:text-gray-900 relative transition-colors"
+                onClick={handleMobileChat}
+              >
+                <MessageCircle size={24} />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+              <button
+                className="text-gray-600 hover:text-gray-900 relative transition-colors"
+                onClick={() => setIsMessageDropdownOpen(!isMessageDropdownOpen)}
+              >
+                <Bell size={24} />
+                {notifications.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {notifications.length}
+                  </span>
+                )}
+              </button>
+            </>
+          )}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-gray-800 focus:outline-none"
+            className="text-gray-800 focus:outline-none transition-colors"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
       {/* Mobile Menu */}
-      <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'} px-6 mt-4`}>
+      <div
+        className={`md:hidden ${
+          isMenuOpen ? 'block' : 'hidden'
+        } px-6 py-4 bg-white border-t border-gray-200 shadow-lg`}
+      >
         <button
-          onClick={() => navigate('/auction-items')}
-          className="block w-full text-left py-2 text-gray-600 hover:text-gray-900"
+          onClick={() => {
+            navigate('/auction-items');
+            setIsMenuOpen(false);
+          }}
+          className="block w-full text-left py-3 text-gray-600 hover:text-gray-900 transition-colors"
         >
           Auction
         </button>
-        <button className="block w-full text-left py-2 text-gray-600 hover:text-gray-900">
-          Live Auction
-        </button>
-        <button className="block w-full text-left py-2 text-gray-600 hover:text-gray-900">
+        <button
+          onClick={() => {
+            navigate('/about');
+            setIsMenuOpen(false);
+          }}
+          className="block w-full text-left py-3 text-gray-600 hover:text-gray-900 transition-colors"
+        >
           About Us
         </button>
         {token ? (
           <button
-            onClick={() => navigate('/profile/dashboard')}
-            className="block w-full bg-[#975f26] text-white py-2 px-4 rounded-md hover:bg-[#663f21] mt-2"
+            onClick={() => {
+              navigate('/profile/dashboard');
+              setIsMenuOpen(false);
+            }}
+            className="block w-full bg-[#975f26] text-white py-3 px-4 rounded-md hover:bg-[#663f21] mt-4 transition-colors"
           >
             Profile
           </button>
         ) : (
           <button
-            onClick={() => navigate('/registration')}
-            className="block w-full bg-[#975f26] text-white py-2 px-4 rounded-md hover:bg-[#663f21] mt-2"
+            onClick={() => {
+              navigate('/registration');
+              setIsMenuOpen(false);
+            }}
+            className="block w-full bg-[#975f26] text-white py-3 px-4 rounded-md hover:bg-[#663f21] mt-4 transition-colors"
           >
             Register
           </button>

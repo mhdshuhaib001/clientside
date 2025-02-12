@@ -7,7 +7,6 @@ import Header from '../../User/Header';
 const ProductPageSkeleton: React.FC = () => {
   return (
     <>
-      <Header />
       <div className="container mx-auto px-4 py-8 bg-gray-50">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Image Gallery Skeleton */}
@@ -120,7 +119,6 @@ const ProductPageSkeleton: React.FC = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 };

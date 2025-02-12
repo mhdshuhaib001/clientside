@@ -106,8 +106,7 @@ const UserDashBoard: React.FC = () => {
         <div className="p-6 sm:p-8 border-b border-amber-200 relative">
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <img
-              src={imagePreview || 'default_image_url'}
-              alt="profile"
+              src={imagePreview || '/icons/profile.png'}
               className="w-20 h-20 rounded-full border-full border-2 border-amber-200"
             />
             <div className="text-center sm:text-left">
@@ -127,25 +126,17 @@ const UserDashBoard: React.FC = () => {
         </div>
       </div>
 
-      {/* Stats Table */}
-      {/* <div className="m-3 grid grid-cols-1 sm:grid-cols-3 gap-4 p-6 sm:p-8 bg-[#f1f1df] border-50 border-b border-amber-200">
-        {state.map((state) => (
-          <div
-            key={state.title}
-            className="bg-white p-4 rounded-lg shadow-sm text-center border border-amber-100 hover:border-amber-300 transition-colors duration-300"
-          >
-            <h2 className="text-3xl font-bold text-amber-600">{state.title}</h2>
-            <p className="text-gray-600 font-semibold text-lg">{state.value}</p>
-          </div>
-        ))}
-      </div> */}
-
       <div className="p-6 sm:p-8">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">Bidding Summary</h2>
+
         {isLoading ? (
           <p>Loading auction history...</p>
         ) : error ? (
           <p>Error fetching auction history.</p>
+        ) : auctionHistory && auctionHistory.data.length === 0 ? (
+          <div className="flex justify-center items-center p-4 border-2 border-dashed border-gray-300 rounded-lg bg-amber-50 text-gray-600">
+            <p>No auction history available.</p>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left text-gray-500">
@@ -161,7 +152,7 @@ const UserDashBoard: React.FC = () => {
               <tbody>
                 {auctionHistory.data
                   .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                  .map((item: any,index:number) => (
+                  .map((item: any, index: number) => (
                     <tr
                       key={item._id}
                       className="bg-white border-b border-amber-100 hover:bg-amber-50 transition-colors duration-300"
@@ -192,20 +183,21 @@ const UserDashBoard: React.FC = () => {
           </div>
         )}
 
-        <div className="flex justify-center mt-4 gap-2">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`px-3 py-1 rounded ${currentPage === page ? 'bg-amber-200' : 'bg-white text-gray-600 hover:bg-amber-100'} transition-colors duration-300`}
-            >
-              {page}
-            </button>
-          ))}
-        </div>
+        {auctionHistory && auctionHistory.data.length > 0 && (
+          <div className="flex justify-center mt-4 gap-2 fixed bottom-6 w-full px-4">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 rounded ${currentPage === page ? 'bg-amber-200' : 'bg-white text-gray-600 hover:bg-amber-100'} transition-colors duration-300`}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Profile Update Modal Component */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalContent>
           {() => (

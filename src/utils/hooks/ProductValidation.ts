@@ -1,84 +1,78 @@
 import * as Yup from 'yup';
+import { CalendarDateTime } from '@internationalized/date';
 
 export const productListingSchema = Yup.object().shape({
   itemTitle: Yup.string()
     .max(80, 'Title cannot exceed 80 characters')
-    .required('Item Title is required'),  categoryId: Yup.string().required('Category is required'),
-  description: Yup.string().required('Description is required'),
-  condition: Yup.string().required('Condition is required'),
-  auctionFormat: Yup.string().required('Auction Format is required'),
-
-  // Simple if-else check for reservePrice based on auctionFormat
-  reservePrice: Yup.number()
-    .nullable()
-    .test('is-required', 'Reserve Price is required', function (value:any) {
-      const auctionFormat = this.parent.auctionFormat;
+    .required('Item Title is required'),
+  
+  categoryId: Yup.string()
+    .required('Category is required'),
+  
+  description: Yup.string()
+    .required('Description is required'),
+  
+  condition: Yup.string()
+    .required('Condition is required'),
+  
+  auctionFormat: Yup.string()
+    .oneOf(['auction', 'buy-it-now'], 'Invalid auction format')
+    .required('Auction Format is required'),
+  
+  reservePrice: Yup.string()
+    .test('is-valid-price', 'Reserve Price must be a valid number', function(value) {
+      if (!value) return true;
+      const number = Number(value);
+      return !isNaN(number);
+    })
+    .test('is-required-for-buy-it-now', 'Reserve Price is required for Buy It Now', function(value) {
+      const { auctionFormat } = this.parent;
       if (auctionFormat === 'buy-it-now') {
-        return value !== undefined && value > 0;
+        return Boolean(value) && Number(value) > 0;
       }
       return true;
     }),
-
-  shippingType: Yup.string().required('Shipping Type is required'),
-  shippingCost: Yup.number()
+  
+  shippingType: Yup.string()
+    .required('Shipping Type is required'),
+  
+  shippingCost: Yup.string()
     .required('Shipping Cost is required')
-    .positive('Shipping Cost must be a positive number'),
-  handlingTime: Yup.string().required('Handling Time is required'),
-  // returnPolicy: Yup.string().required('Return Policy is required'),
+    .test('is-valid-cost', 'Shipping Cost must be a valid number', function(value) {
+      if (!value) return true;
+      const number = Number(value);
+      return !isNaN(number) && number >= 0;
+    }),
+  
+  handlingTime: Yup.string()
+    .required('Handling Time is required'),
+  
   images: Yup.array()
-    .min(5, 'At least 5 images are required')
-    .max(5, 'No more than 5 images allowed'),
-  // Simple if-else check for auction dates based on auctionFormat
-  auctionStartDateTime: Yup.date()
-    .nullable()
-    .test('is-required', 'Start date is required', function (value) {
-      const auctionFormat = this.parent.auctionFormat;
+    .min(1, 'At least one image is required')
+    .max(5, 'Maximum 5 images allowed'),
+  
+  auctionStartDateTime: Yup.mixed()
+    .test('is-required-for-auction', 'Start date is required for auction', function(value) {
+      const { auctionFormat } = this.parent;
       if (auctionFormat === 'auction') {
-        return value !== null;
+        return value instanceof CalendarDateTime;
       }
-      return true; 
+      return true;
     }),
-
-  auctionEndDateTime: Yup.date()
-    .nullable()
-    .test('is-required', 'End date is required', function (value:any) {
-      const auctionFormat = this.parent.auctionFormat;
-      const auctionStartDateTime = this.parent.auctionStartDateTime;
+  
+  auctionEndDateTime: Yup.mixed()
+    .test('is-required-for-auction', 'End date is required for auction', function(value) {
+      const { auctionFormat } = this.parent;
       if (auctionFormat === 'auction') {
-        return value !== null && value > auctionStartDateTime;
+        return value instanceof CalendarDateTime;
       }
-      return true; 
-    }),
-  });
-
-
-  // import * as Yup from 'yup';
-
-  // export const productListingSchema = Yup.object().shape({
-  //   itemTitle: Yup.string().required('Item Title is required'),
-  //   category: Yup.string().required('Category is required'),
-  //   description: Yup.string().required('Description is required'),
-  //   condition: Yup.string().required('Condition is required'),
-  //   auctionFormat: Yup.string().required('Auction Format is required'),
-    
-  //   reservePrice: Yup.number().when('auctionFormat', {
-  //     is: 'buy-it-now',
-  //     then: (schema) => schema.required('Reserve Price is required for buy-it-now format'),
-  //   }),
-
-  //   shippingType: Yup.string().required('Shipping Type is required'),
-  //   shippingCost: Yup.number().required('Shipping Cost is required'),
-  //   handlingTime: Yup.string().required('Handling Time is required'),
-  //   returnPolicy: Yup.string().required('Return Policy is required'),
-  //   images: Yup.array().min(1, 'At least one image is required'),
-
-  //   auctionStartDateTime: Yup.date().when('auctionFormat', {
-  //     is: 'auction',
-  //     then: (schema) => schema.required('Start date is required for auction format'),
-  //   }),
-
-  //   auctionEndDateTime: Yup.date().when('auctionFormat', {
-  //     is: 'auction',
-  //     then: (schema) => schema.required('End date is required for auction format'),
-  //   }),
-  // });
+      return true;
+    })
+    .test('is-after-start', 'End date must be after start date', function(value) {
+      const { auctionFormat, auctionStartDateTime } = this.parent;
+      if (auctionFormat === 'auction' && value instanceof CalendarDateTime && auctionStartDateTime instanceof CalendarDateTime) {
+        return value.compare(auctionStartDateTime) > 0;
+      }
+      return true;
+    })
+});

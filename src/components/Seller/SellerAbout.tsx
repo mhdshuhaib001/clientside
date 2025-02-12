@@ -27,7 +27,7 @@ export default function SellerAboutPage() {
     image: '',
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
-
+console.log(sellerInfo,'=============')
   // Load seller data
   useEffect(() => {
     if (sellerData?.seller) {
@@ -37,12 +37,10 @@ export default function SellerAboutPage() {
         phone: sellerData.seller.phone || '',
         address: sellerData.seller.address || '',
         about: sellerData.seller.about || '',
-        image: sellerData.seller.profile || '', 
+        image: sellerData.seller.profile || '/icon/profile.png', 
       });
     }
   }, [sellerData]);
-  console.log(sellerData,'sellerInfo============================================');
-  // Handle image change
   const handleImageChange = (
     e: ChangeEvent<HTMLInputElement>,
     setFieldValue: (field: string, value: any) => void,
@@ -56,7 +54,6 @@ export default function SellerAboutPage() {
     }
   };
 
-  // Form submission
   const handleFormSubmit = async (values: FormikValues) => {
     const formData = new FormData();
     formData.append('_id', sellerId);
@@ -107,7 +104,7 @@ export default function SellerAboutPage() {
               <div className="flex items-center space-x-6">
                 <div className="relative w-32 h-32 overflow-hidden rounded-full border border-[#c2b370]">
                   <img
-                    src={sellerInfo.image || '/placeholder.svg'}
+                    src={sellerInfo.image || '/icon/profile.png'}
                     alt="Seller"
                     className="w-full h-full object-cover rounded-full"
                   />
@@ -134,7 +131,7 @@ export default function SellerAboutPage() {
                   <h2 className="text-xl font-semibold text-[#5c4f2c]">
                     {sellerInfo.companyName || 'Company Name'}
                   </h2>
-                  <p className="text-[#3a3422]">{sellerData?.seller.email || 'Email Address'}</p>
+                  {/* <p className="text-[#3a3422]">{sellerData?.seller.email || 'Email Address'}</p> */}
                 </div>
               </div>
 

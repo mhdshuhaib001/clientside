@@ -67,6 +67,7 @@ const ProductListingForm: React.FC = () => {
     auctionEndDateTime: null,
     images: [],
   });
+  
   const compareDates = (date1: CalendarDateTime, date2: CalendarDateTime): number => {
     if (date1.year !== date2.year) return date1.year - date2.year;
     if (date1.month !== date2.month) return date1.month - date2.month;
@@ -109,8 +110,6 @@ const ProductListingForm: React.FC = () => {
       });
     }
   };
-
-
 
   useEffect(() => {
     if (!productDetails) {
@@ -251,7 +250,10 @@ const ProductListingForm: React.FC = () => {
         initialValues={initialValues}
         enableReinitialize={true}
         validationSchema={productListingSchema}
-        onSubmit={handleSubmit}
+        onSubmit={(values, actions) => {
+          console.log('Formik onSubmit triggered');
+          handleSubmit(values);
+        }}
       >
         {({ setFieldValue }) => (
           <Form>
@@ -438,8 +440,8 @@ const ProductListingForm: React.FC = () => {
                               isRequired
                               hideTimeZone
                               aria-labelledby="start-date-label"
-                              aria-label="Select auction start date and time"                               minValue={today(getLocalTimeZone())}
-                              
+                              aria-label="Select auction start date and time"
+                              minValue={today(getLocalTimeZone())}
                             />
                           )}
                         </Field>
@@ -462,9 +464,9 @@ const ProductListingForm: React.FC = () => {
                               onChange={(date) => handleEndDateChange(date, field)}
                               isRequired
                               minValue={today(getLocalTimeZone())}
-                              aria-labelledby="end-date-label"  
-        aria-label="Select auction end date and time" 
-                              />
+                              aria-labelledby="end-date-label"
+                              aria-label="Select auction end date and time"
+                            />
                           )}
                         </Field>
                         <ErrorMessage

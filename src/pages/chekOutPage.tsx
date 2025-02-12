@@ -170,8 +170,8 @@ const CheckoutPage: React.FC = () => {
                     <h2 className="text-2xl font-semibold mb-4 text-gray-800">Payment Method</h2>
                     <div className="space-y-2">
                       {[
-                        { id: 'credit-card', label: 'Credit Card', icon: CreditCard },
-                        { id: 'wallet', label: 'Bank Transfer', icon: WalletMinimal },
+                        // { id: 'credit-card', label: 'Credit Card', icon: CreditCard },
+                        // { id: 'wallet', label: 'Bank Transfer', icon: WalletMinimal },
                         { id: 'stripe', label: 'stripe', icon: Truck },
                       ].map((method) => (
                         <label

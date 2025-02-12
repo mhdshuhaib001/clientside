@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import Header from '../../components/User/Header';
-import Footer from '../../components/User/Footer';
+
 import { useParams } from 'react-router-dom';
 import { useFetchOrderByIdQuery } from '../../services/apis/orderApi';
 import SellerProfileCard from '../../components/Seller/SellerProfileCard';
@@ -131,7 +130,7 @@ const EnhancedOrderItemDetails: React.FC = () => {
   console.log('Order Status:', orderItem.status);
   return (
     <div>
-      <Header />
+   
       <div className="min-h-screen bg-gradient-to-b from-amber-50 to-amber-100 py-12 px-4 sm:px-6 lg:px-8">
         <div className=" bg-white shadow-2xl rounded-lg overflow-hidden">
           <div className="px-4 py-5 gap-2 sm:px-6 flex justify-center items-center  bg-amber-200 border-b border-amber-300">
@@ -255,7 +254,6 @@ const EnhancedOrderItemDetails: React.FC = () => {
           </div>
         )}
       </div>
-      <Footer />
     </div>
   );
 };

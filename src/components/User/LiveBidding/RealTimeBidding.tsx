@@ -1,35 +1,32 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
-import { Image } from '@nextui-org/react';
 import { useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
 import toast from 'react-hot-toast';
-import { useGetProductByIdQuery } from '../../services/apis/productApi';
-import { useGetAuctionByIdQuery, usePlaceBidMutation } from '../../services/apis/auctionApi';
-import { RootState } from '../../store/Store';
-import SellerProfileCard from '../Seller/SellerProfileCard';
-import AuctionSkelton from '../commen/Skelton/AuctionSkelton';
-import { useAuctionTimer } from '../../utils/hooks/useAuctionTimer';
-import AuctionResultModal from '../commen/AuctionResultModal';
+import { RootState } from '../../../store/Store';
+import { useGetProductByIdQuery } from '../../../services/apis/productApi';
 
-type Bid = {
-  id?: string;
-  bidder: string;
-  amount: number;
-  time: Date | string;
-  avatar: string | undefined;
-};
+import { useGetAuctionByIdQuery, usePlaceBidMutation } from '../../../services/apis/auctionApi';
+import SellerProfileCard from '../../Seller/SellerProfileCard';
+import AuctionSkeleton from '../../commen/Skelton/AuctionSkelton';
+import { useAuctionTimer } from '../../../utils/hooks/useAuctionTimer';
+import AuctionResultModal from '../../commen/AuctionResultModal';
+import { ProductDetails } from './ProductDetails';
+import { BiddingLeaderboard } from './BiddingLeaderboard';
+import { BiddingControls } from './BiddingControls';
+import { Bid } from '../../../interface/userTypes/BidTypes';
 
 export default function RealTimeBidding() {
+  const { id } = useParams<{ id: string }>();
   const userData = useSelector((state: RootState) => state.User);
   const userId = userData._id;
-  const { id } = useParams<{ id: string }>();
 
-  // Queries and Mutations
+  // Queries and state
   const { data, error, isLoading } = useGetProductByIdQuery(id);
   const { data: auctionData } = useGetAuctionByIdQuery(id);
   const [placeBid] = usePlaceBidMutation();
+
+  // State management
   const [auctionStatus, setAuctionStatus] = useState<string>('live');
   const [customBid, setCustomBid] = useState('');
   const [currentBid, setCurrentBid] = useState(0);
@@ -46,7 +43,6 @@ export default function RealTimeBidding() {
   } | null>(null);
 
   const socketRef = useRef<any>(null);
-
   const { productData, sellerData: sellerProfile } = data || {};
   useEffect(() => {
     if (productData?.auctionEndDateTime) {
@@ -77,7 +73,7 @@ export default function RealTimeBidding() {
 
   // Socket Connection Effect
   useEffect(() => {
-  const socket = io(import.meta.env.VITE_SERVER_URL, {
+    const socket = io(import.meta.env.VITE_SERVER_URL, {
       path: '/socket.io',
       withCredentials: true,
       transports: ['websocket', 'polling'],
@@ -127,6 +123,7 @@ export default function RealTimeBidding() {
       socket.disconnect();
     };
   }, [id, userId, bids]);
+  
 
   // Generate Quick Bids
   const generateQuickBids = useCallback((currentBidValue: number) => {
@@ -138,6 +135,13 @@ export default function RealTimeBidding() {
       currentBidValue + increment * 4,
     ];
   }, []);
+
+  useEffect(() => {
+    if (currentBid > 0) {
+      setQuickBids(generateQuickBids(currentBid));
+    }
+  }, [currentBid, generateQuickBids]);
+  
   useEffect(() => {
     if (productData) {
       const initialBid =
@@ -198,7 +202,6 @@ export default function RealTimeBidding() {
     setIsPlacingBid(true);
 
     try {
-
       socketRef.current.emit('place_bid', {
         auctionId: id,
         bidder: userData.name,
@@ -228,7 +231,6 @@ export default function RealTimeBidding() {
       setCurrentBid(updatedBids[0].amount);
     } catch (error) {
       console.error('Failed to place bid:', error);
-      // setIsModalOpen(true);
     } finally {
       setIsPlacingBid(false);
     }
@@ -241,85 +243,26 @@ export default function RealTimeBidding() {
 
     if (isNaN(bid) || bid <= currentBid) {
       toast.error('Your bid must be a valid number greater than the current bid.');
-      // setIsModalOpen(true);
       return;
     }
 
     await handleBid(bid);
   };
 
-  if (isLoading) return <AuctionSkelton />;
+  if (isLoading) return <AuctionSkeleton />;
   if (error) return <div>Error loading product data.</div>;
   if (!productData) return <div>No product data found.</div>;
 
   return (
     <div className="container mx-auto px-4 py-8 font-serif">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-4">
-          <div className="aspect-w-1 aspect-h-1">
-            <Image
-              isBlurred
-              width={240}
-              height={240}
-              src={productData.images[0]}
-              alt="Product Image"
-              className="m-5"
-            />
-          </div>
-          <h1 className="text-2xl font-bold">{productData.itemTitle}</h1>
+        <ProductDetails
+          productData={productData}
+          currentBid={currentBid}
+          timeLeft={timeLeft}
+          auctionStatus={auctionStatus}
+        />
 
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="text-gray-600">Start Price:</p>
-              <p className="text-xl font-semibold">$ {productData.reservePrice}</p>
-            </div>
-            <div>
-              <p className="text-gray-600">Current Price:</p>
-              <p className="text-2xl font-bold text-green-600">
-                $ {currentBid || productData.reservePrice}
-              </p>
-            </div>
-          </div>
-
-          {auctionStatus !== 'sold' ? (
-            <div className="bg-gray-100 p-4 rounded-lg">
-              <div className="grid grid-cols-4 gap-4 text-center">
-                <div>
-                  <div className="text-3xl font-bold">{timeLeft.days}</div>
-                  <div className="text-sm text-gray-600">Days</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold">{timeLeft.hours}</div>
-                  <div className="text-sm text-gray-600">Hours</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold">{timeLeft.minutes}</div>
-                  <div className="text-sm text-gray-600">Minutes</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold">{timeLeft.seconds}</div>
-                  <div className="text-sm text-gray-600">Seconds</div>
-                </div>
-              </div>
-              <p className="text-center mt-2 text-sm text-gray-600">
-                Ending On:{' '}
-                {new Date(productData.auctionEndDateTime).toLocaleDateString(undefined, {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}{' '}
-                ,{' '}
-                {new Date(productData.auctionEndDateTime).toLocaleTimeString(undefined, {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: true,
-                })}
-              </p>
-            </div>
-          ) : (
-            <div className="text-red-600 font-bold text-center">Auction Ended</div>
-          )}
-        </div>
         <div className="space-y-4">
           <SellerProfileCard
             sellerName={sellerProfile?.companyName}
@@ -327,74 +270,20 @@ export default function RealTimeBidding() {
             id={sellerProfile?.sellerId}
           />
 
-          <div className="bg-orange-100  rounded-lg p-4">
-            <h3 className="text-lg font-semibold mb-4">Bidding Leader</h3>
+          <BiddingLeaderboard bids={bids} />
 
-            {bids.length > 0 ? (
-              <div className="space-y-4">
-                {bids.map((bid) => (
-                  <div key={bid.id} className="flex items-center space-x-3">
-                    <Image
-                      src={bid.avatar}
-                      alt={bid.bidder}
-                      width={40}
-                      height={40}
-                      className="rounded-full"
-                    />
-                    <div className="flex-grow">
-                      <p className="font-semibold">{bid.bidder}</p>
-                      <p className="text-sm text-gray-600">
-                        {new Date(bid.time).toLocaleTimeString()} for{' '}
-                        {bid.amount ? bid.amount.toFixed(2) : '0.00'}$
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex justify-center items-center">
-                <p className="text-gray-600 text-center">Be the first to start the bidding!</p>
-              </div>
-            )}
-          </div>
-
-          {auctionStatus !== 'sold' ? (
-            <>
-              <div className="grid grid-cols-4 gap-2">
-                {quickBids.map((bid) => (
-                  <button
-                    key={bid}
-                    onClick={() => handleBid(bid)}
-                    className="bg-amber-100 text-amber-950 py-2 rounded-lg hover:bg-amber-200 transition duration-300"
-                  >
-                    $ {bid}
-                  </button>
-                ))}
-              </div>
-              <form onSubmit={handleCustomBid} className="flex space-x-2">
-                <input
-                  type="number"
-                  value={customBid}
-                  // disabled={isBiddingDisabled()}
-                  onChange={(e) => setCustomBid(e.target.value)}
-                  placeholder="Enter your bid"
-                  className="flex-grow px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300"
-                />
-                <button
-                  type="submit"
-                  className="bg-amber-700 text-white px-4 py-2 rounded-lg hover:bg-amber-500 border-amber-200 transition duration-300"
-                >
-                  <ChevronRight className="w-6 h-6" />
-                </button>
-              </form>
-            </>
-          ) : (
-            <div className="flex justify-center items-center bg-red-100 border border-red-400 text-red-600 font-bold p-4 rounded-lg shadow-md">
-              Bidding is closed for this auction.
-            </div>
+          {auctionStatus !== 'sold' && (
+            <BiddingControls
+              quickBids={quickBids}
+              customBid={customBid}
+              handleBid={handleBid}
+              handleCustomBid={handleCustomBid}
+              setCustomBid={setCustomBid}
+            />
           )}
         </div>
       </div>
+
       <AuctionResultModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

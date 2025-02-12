@@ -48,10 +48,7 @@ const UserRoute: React.FC = () => {
         <Route path="/success" element={<Success />} />
         <Route path="/orders/:id" element={<OrderDetails />} />
         <Route path="/auction-items" element={<AuctionItems />} />
-        <Route
-          path="/auction-page/:id"
-          element={<UserProtectedRoute element={AuctionPage} />}
-        />
+        <Route path="/auction-page/:id" element={<UserProtectedRoute element={AuctionPage} />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/error" element={<ErrorPage />} />
         <Route path="*" element={<ErrorPage />} />

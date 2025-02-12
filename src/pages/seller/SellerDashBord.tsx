@@ -95,7 +95,7 @@ const SellerDashBord: React.FC<SellerProps> = ({ onSellerCreate }) => {
         setHasSellerToken(true); 
         dispatch(setSeller(true));
         dispatch(setSellerId(response.sellerId))
-        navigate('/profile/seller/addproduct');
+        navigate('/profile/seller/dashboard')
       }
 
       setSuccessMessage('Brand created successfully!');
@@ -120,6 +120,7 @@ const SellerDashBord: React.FC<SellerProps> = ({ onSellerCreate }) => {
       <div className="flex flex-col items-center">
         {hasSellerToken ? (
           <SellerNavigation />
+          
         ) : (
           <div className="text-center">
             <h2 className="text-xl font-medium mb-4 text-center sm:text-2xl">

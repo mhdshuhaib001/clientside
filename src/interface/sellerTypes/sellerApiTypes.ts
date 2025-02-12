@@ -77,3 +77,4 @@ export interface SellerInfo {
   about: string;
   image: string;
 }
+

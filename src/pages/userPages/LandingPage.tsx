@@ -106,7 +106,7 @@ console.log(products,'this is on the landingpa')
 
   return (
     <div className="flex flex-col min-h-screen bg-amber-50">
-      <Header />
+      <Header/>
       <main className="flex-grow">
         <HeroSection />
 
@@ -120,18 +120,18 @@ console.log(products,'this is on the landingpa')
               <ChatBot onClose={handleCloseChat} />
             </div>
           )}
-          <div ref={categorySectionRef}>
+          <div>
             <CategorySection />
           </div>
-          <div ref={productSliderRef}>
+          <div>
             <HotDeal products={products} isLoading={isLoading} />
           </div>
-          <div ref={featuredHighlightsRef}>
+          <div >
             <FeaturedHighlights />
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer/>
     </div>
   );
 };

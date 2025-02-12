@@ -6,7 +6,6 @@ import { PersistGate } from 'redux-persist/integration/react';
 import  store, { persistor } from './store/Store';
 import './index.css';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import React from 'react';
 import {NextUIProvider} from '@nextui-org/react'
 
 createRoot(document.getElementById('root')!).render(

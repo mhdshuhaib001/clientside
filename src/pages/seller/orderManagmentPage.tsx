@@ -94,7 +94,7 @@ export default function OrderManagementTable() {
       <h1 className="text-3xl font-serif text-amber-900 mb-6 text-center">Order Management</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4"> 
         {orders.length === 0 ? (
-          <div className="text-center text-xl text-gray-700 col-span-2">
+          <div className=" items-center text-center text-xl text-gray-700 col-span-2">
             You don't have any orders.
           </div>
         ) : (

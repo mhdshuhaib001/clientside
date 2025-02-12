@@ -29,38 +29,45 @@ export const useAuctionTimer = ({
     days: 0,
     hours: 0,
     minutes: 0,
-    seconds: 0
+    seconds: 0,
   });
-  const [isEnded, setIsEnded] = useState<boolean>(false);
+  const [isEnded, setIsEnded] = useState(false);
 
   const calculateTimeLeft = useCallback(() => {
     const endTime = new Date(endDateTime).getTime();
     const now = new Date().getTime();
     const distance = endTime - now;
 
-    if (distance <= 0 && !isEnded) {
-      setIsEnded(true);
-      setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      onTimeEnd?.();
-      return; 
+    if (distance <= 0) {
+      if (!isEnded) {
+        setIsEnded(true);
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        onTimeEnd?.();
+      }
+      return;
     }
 
-    if (!isEnded) {
-      setTimeLeft({
-        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-        seconds: Math.floor((distance % (1000 * 60)) / 1000)
-      });
-    }
+    const newTimeLeft = {
+      days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+      minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+      seconds: Math.floor((distance % (1000 * 60)) / 1000),
+    };
+
+    // Update state only if there's a change
+    setTimeLeft((prevTimeLeft) => (
+      JSON.stringify(prevTimeLeft) !== JSON.stringify(newTimeLeft)
+        ? newTimeLeft
+        : prevTimeLeft
+    ));
   }, [endDateTime, onTimeEnd, isEnded]);
 
   useEffect(() => {
     calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 1000); 
+    const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
-  }, [calculateTimeLeft]); 
+  }, [calculateTimeLeft]);
 
   const formattedEndTime = {
     date: new Date(endDateTime).toLocaleDateString(undefined, {
@@ -72,12 +79,12 @@ export const useAuctionTimer = ({
       hour: '2-digit',
       minute: '2-digit',
       hour12: true,
-    })
+    }),
   };
 
   return {
     timeLeft,
     isEnded,
-    formattedEndTime
+    formattedEndTime,
   };
 };
