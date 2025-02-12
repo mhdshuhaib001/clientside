@@ -169,15 +169,16 @@ const HotDeals: React.FC<{ products: ProductType[]; isLoading: boolean }> = ({
   // Select up to 2 hot products, with priority to live products
   let hotProducts = [] as any;
   if (liveProducts.length > 0) {
-    hotProducts = liveProducts.slice(0, 1); // Show 1 live product if available
+    hotProducts = liveProducts.slice(0, 1); 
   }
   if (buyItNowProducts.length > 0 && hotProducts.length < 2) {
-    hotProducts.push(buyItNowProducts[0]); // Add Buy It Now product if available
+    hotProducts.push(buyItNowProducts[0]); 
   }
 
   // If there are more than 1 live product, shuffle them
   if (liveProducts.length > 1) {
-    hotProducts = liveProducts.sort(() => Math.random() - 0.5).slice(0, 2); // Shuffle live products
+    // Shuffle live products
+    hotProducts = liveProducts.sort(() => Math.random() - 0.5).slice(0, 2); 
   }
 
   const truncateText = (text: string, maxLength: number) => {
@@ -235,7 +236,7 @@ const HotDeals: React.FC<{ products: ProductType[]; isLoading: boolean }> = ({
         </button>
       </div>
       <div className="grid md:grid-cols-2 gap-4">
-        {hotProducts.map((item) => {
+        {hotProducts.map((item:ProductType) => {
           const time = formatTime(timeLeft[item._id || ''] || 0);
           
           return (
