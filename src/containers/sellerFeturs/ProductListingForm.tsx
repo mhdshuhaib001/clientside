@@ -250,7 +250,7 @@ const ProductListingForm: React.FC = () => {
         initialValues={initialValues}
         enableReinitialize={true}
         validationSchema={productListingSchema}
-        onSubmit={(values, actions) => {
+        onSubmit={(values) => {
           console.log('Formik onSubmit triggered');
           handleSubmit(values);
         }}
