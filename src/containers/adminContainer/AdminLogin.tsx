@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useAdminLoginMutation } from '../../services/apis/adminApi';
 import { useNavigate } from 'react-router-dom';
 
-// Define props type
 interface AdminLoginFormProps {
   onLogin: (data: { email: string; password: string }) => void;
 }

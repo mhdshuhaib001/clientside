@@ -176,8 +176,7 @@ const HotDeals: React.FC<{ products: ProductType[]; isLoading: boolean }> = ({
   }
 
   // If there are more than 1 live product, shuffle them
-  if (liveProducts.length > 1) {
-    // Shuffle live products
+  if (liveProducts.length > 2) {
     hotProducts = liveProducts.sort(() => Math.random() - 0.5).slice(0, 2); 
   }
 
@@ -221,7 +220,7 @@ const HotDeals: React.FC<{ products: ProductType[]; isLoading: boolean }> = ({
     return (
       <div className="container mx-auto p-4">
         <div className="text-center text-gray-500">
-          {isLoading ? 'Loading hot deals...' : 'No products available'}
+          {isLoading ? 'Loading hot deals...' : ''}
         </div>
       </div>
     );

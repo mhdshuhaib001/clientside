@@ -132,71 +132,103 @@ const AdminCategoryTable: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {categories.map((category, index) => (
-              <tr key={category.id}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {index + 1 + (currentPage - 1) * itemsPages}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{category.name}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <img
-                    src={category.imageUrl}
-                    alt={category.name}
-                    width={60}
-                    height={60}
-                    className="rounded-md"
-                  />
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <img src={category.iconUrl} className="w-9 h-9" />
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button
-                    onClick={() => handleEditCategoryClick(category)}
-                    className="text-indigo-600 hover:text-indigo-900 mr-2"
-                  >
-                    Edit
-                  </button>
-                  <button onClick={() => handleDeleteCategoryClick(category._id)} className="text-red-600 hover:text-red-900">Delete</button>
+            {categories.length > 0 ? (
+              categories.map((category, index) => (
+                <tr key={category.id}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {index + 1 + (currentPage - 1) * itemsPages}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{category.name}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <img
+                      src={category.imageUrl}
+                      alt={category.name}
+                      width={60}
+                      height={60}
+                      className="rounded-md"
+                    />
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <img src={category.iconUrl} className="w-9 h-9" />
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button
+                      onClick={() => handleEditCategoryClick(category)}
+                      className="text-indigo-600 hover:text-indigo-900 mr-2"
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteCategoryClick(category._id)} 
+                      className="text-red-600 hover:text-red-900"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={5} className="px-6 py-10 text-center">
+                  <div className="flex flex-col items-center justify-center">
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      className="h-12 w-12 text-gray-400 mb-2" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={1.5} 
+                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" 
+                      />
+                    </svg>
+                    <p className="text-lg font-medium text-gray-600">No categories found</p>
+                    <p className="text-sm text-gray-500 mt-1">Click "Add Category" to create a new category</p>
+                  </div>
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
 
       <div className="mt-4 flex justify-end">
-      <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-          <button
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-          >
-            Previous
-          </button>
-          {Array.from({ length: totalPages }).map((_, index) => (
+        {totalPages > 1 && (
+          <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
             <button
-              key={index}
-              onClick={() => paginate(index + 1)}
-              className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${
-                currentPage === index + 1
-                  ? 'text-indigo-600 bg-indigo-50'
-                  : 'text-gray-700 hover:bg-gray-50'
-              }`}
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
             >
-              {index + 1}
+              Previous
             </button>
-          ))}
-          <button
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-          >
-            Next
-          </button>
-        </nav>
+            {Array.from({ length: totalPages }).map((_, index) => (
+              <button
+                key={index}
+                onClick={() => paginate(index + 1)}
+                className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${
+                  currentPage === index + 1
+                    ? 'text-indigo-600 bg-indigo-50'
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </nav>
+        )}
       </div>
 
       <CategoryModal

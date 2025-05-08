@@ -14,6 +14,13 @@ export const adminApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_SERVER_URL,
     credentials: 'include',
+    prepareHeaders:(headers)=>{
+      const token = localStorage.getItem('adminToken');
+      if (token) {
+        headers.set('adminauthorization', `Bearer ${token}`);
+      }
+      return headers;
+    }
   }),
   endpoints: (builder) => ({
     adminLogin: builder.mutation<AdminLoginResponse, AdminLoginRequest>({

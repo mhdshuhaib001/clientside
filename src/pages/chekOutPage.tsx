@@ -119,10 +119,10 @@ const CheckoutPage: React.FC = () => {
         const orderResponse = await createOrder(orderData);
         const orderId = orderResponse.data;
 
-        let price = productData.auctionStatus === 'sold' && productData.currentBid 
-        ? productData.currentBid 
-        : productData.reservePrice;
-
+        let price =
+          productData.auctionStatus === 'sold' && productData.currentBid
+            ? productData.currentBid
+            : productData.reservePrice;
 
         const totalPrice = price + productData.shippingCost;
 
@@ -311,8 +311,10 @@ const CheckoutPage: React.FC = () => {
                           <span>
                             ${' '}
                             {productData.auctionStatus === 'sold' && productData.currentBid
-                              ? productData.currentBid + productData.shippingCost
-                              : productData.reservePrice + productData.shippingCost}
+                              ? Number(productData.currentBid) +
+                                Number(productData.shippingCost || 0)
+                              : Number(productData.reservePrice) +
+                                Number(productData.shippingCost || 0)}
                           </span>
                         </div>
                       </div>
