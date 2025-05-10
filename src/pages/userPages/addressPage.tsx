@@ -45,34 +45,39 @@ export default function AddressBook(): JSX.Element {
               <p>Loading addresses...</p>
             ) : (
               <>
-                {addresses?.map((addr: Address) => (
-                  <div key={addr._id} className="p-4 border-b border-amber-200">
-                    <p>
-                      <strong>Name:</strong> {addr.fullName}
-                    </p>
-                    <p>
-                      <strong>Phone:</strong> {addr.phoneNumber}
-                    </p>
-                    <p>
-                      <strong>Address:</strong> {addr.streetAddress}, {addr.city}, {addr.state},{' '}
-                      {addr.postalCode}, {addr.country}
-                    </p>
-                    <div className="mt-2">
-                      <button
-                        className="text-blue-600 hover:text-blue-800"
-                        onClick={() => openEditDialog(addr)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="text-red-600 hover:text-red-800 ml-4"
-                        onClick={() => handleDeleteAddress(addr._id ?? '')}
-                      >
-                        Delete
-                      </button>
+                {addresses && addresses.length > 0 ? (
+                  addresses.map((addr: Address) => (
+                    <div key={addr._id} className="p-4 border-b border-amber-200">
+                      <p>
+                        <strong>Name:</strong> {addr.fullName}
+                      </p>
+                      <p>
+                        <strong>Phone:</strong> {addr.phoneNumber}
+                      </p>
+                      <p>
+                        <strong>Address:</strong> {addr.streetAddress}, {addr.city}, {addr.state},{' '}
+                        {addr.postalCode}, {addr.country}
+                      </p>
+                      <div className="mt-2">
+                        <button
+                          className="text-blue-600 hover:text-blue-800"
+                          onClick={() => openEditDialog(addr)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="text-red-600 hover:text-red-800 ml-4"
+                          onClick={() => handleDeleteAddress(addr._id ?? '')}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-center text-gray-500">No addresses found.</p>
+                )}
+
                 <button
                   className="w-full mt-6 bg-amber-600 text-white rounded-md py-2 hover:bg-amber-700"
                   onClick={() => setIsAddDialogOpen(true)}
@@ -138,8 +143,6 @@ export default function AddressBook(): JSX.Element {
           </div>
         </div>
       )}
-      
     </div>
-
   );
 }

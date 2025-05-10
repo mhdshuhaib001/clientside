@@ -6,7 +6,7 @@ export const LoginValidation = () => {
       .email('Invalid email')
       .required('Required'),
     password: Yup.string()
-      .length(8, 'Password must be exactly 8 characters long')
+      .min(8, 'Password must be exactly 8 characters long')
       .required('Required'),
   });
 

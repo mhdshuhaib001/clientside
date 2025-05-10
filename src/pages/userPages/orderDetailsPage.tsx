@@ -33,7 +33,7 @@ const EnhancedOrderItemDetails: React.FC = () => {
   const { id } = useParams();
   console.log(id);
   const { data: orderData } = useFetchOrderByIdQuery(id ?? '');
-
+  console.log(orderData, 'this is the order Dataaaaa......');
   const orderItem = orderData
     ? {
         id: orderData.orderId,
@@ -42,8 +42,8 @@ const EnhancedOrderItemDetails: React.FC = () => {
         productImage: orderData.productImage,
         bidAmount: orderData.bidAmount,
         orderDate: new Date(orderData.orderDate).toLocaleDateString(),
-        status:
-          orderData.orderStatus ,
+        status: orderData.orderStatus,
+        paymentStatus: orderData.paymentStatus ?? 'Pending',
         seller: {
           id: orderData.sellerId,
           name: orderData.companyName || 'Unknown Seller',
@@ -70,6 +70,7 @@ const EnhancedOrderItemDetails: React.FC = () => {
         bidAmount: 0,
         orderDate: 'Loading...',
         status: 'Pending',
+        paymentStatus: 'Pending',
         seller: {
           name: 'Loading...',
           rating: 0,
@@ -122,15 +123,12 @@ const EnhancedOrderItemDetails: React.FC = () => {
   //   );
   // };
   const handleDownloadInvoice = () => {
-    // Logic to download the invoice
-    // This could be a link to a PDF or a function that generates the invoice
-    const invoiceUrl = `/invoices/${orderItem.id}.pdf`; 
+    const invoiceUrl = `/invoices/${orderItem.id}.pdf`;
     window.open(invoiceUrl, '_blank');
   };
   console.log('Order Status:', orderItem.status);
   return (
     <div>
-   
       <div className="min-h-screen bg-gradient-to-b from-amber-50 to-amber-100 py-12 px-4 sm:px-6 lg:px-8">
         <div className=" bg-white shadow-2xl rounded-lg overflow-hidden">
           <div className="px-4 py-5 gap-2 sm:px-6 flex justify-center items-center  bg-amber-200 border-b border-amber-300">
@@ -181,22 +179,35 @@ const EnhancedOrderItemDetails: React.FC = () => {
                     orderItem.status === 'Delivered'
                       ? 'bg-green-200 text-green-800'
                       : orderItem.status === 'Shipped'
-                      ? 'bg-blue-200 text-blue-800'
-                      : orderItem.status === 'Canceled'
-                      ? 'bg-red-200 text-red-800'
-                      : 'bg-yellow-200 text-yellow-800'
+                        ? 'bg-blue-200 text-blue-800'
+                        : orderItem.status === 'Canceled'
+                          ? 'bg-red-200 text-red-800'
+                          : 'bg-yellow-200 text-yellow-800'
                   }`}
                 >
                   {orderItem.status === 'Delivered'
                     ? 'Delivered'
                     : orderItem.status === 'Shipped'
-                    ? 'Shipped'
-                    : orderItem.status === 'Canceled'
-                    ? 'Canceled'
-                    : 'Pending'}
+                      ? 'Shipped'
+                      : orderItem.status === 'Canceled'
+                        ? 'Canceled'
+                        : 'Pending'}
                 </span>
               </div>
-              
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-lg font-bold text-amber-900">Payment Status:</span>
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    orderItem.paymentStatus === 'Paid'
+                      ? 'bg-green-200 text-green-800'
+                      : orderItem.paymentStatus === 'Failed'
+                        ? 'bg-red-200 text-red-800'
+                        : 'bg-yellow-200 text-yellow-800'
+                  }`}
+                >
+                  {orderItem.paymentStatus}
+                </span>
+              </div>
               {orderItem.status === 'Delivered' && (
                 <button
                   onClick={handleDownloadInvoice}
@@ -205,7 +216,6 @@ const EnhancedOrderItemDetails: React.FC = () => {
                   Download Invoice
                 </button>
               )}
-              
             </div>
           </div>
           <div className="border-t border-amber-200 px-6 py-4">
