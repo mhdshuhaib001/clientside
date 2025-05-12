@@ -128,7 +128,7 @@ export const sellerApi = createApi({
     }),
     fetchSellerProfile: builder.query<any, string>({
       query: (sellerId) => ({
-        url: `/api/seller/${sellerId}`,
+        url: `/api/seller/${sellerId}/full-profile`,
         method: 'GET',
       }),
     }),
