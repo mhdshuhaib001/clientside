@@ -6,8 +6,8 @@ interface VideoCallProps {
   userID: string;
   onEndCall: () => void;
 }
-
-const VideoCall: React.FC<VideoCallProps> = ({ roomID, userID, onEndCall }) => {
+// onEndCall
+const VideoCall: React.FC<VideoCallProps> = ({ roomID, userID }) => {
   const zpRef = useRef<any>(null);
 
   useEffect(() => {
@@ -67,7 +67,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ roomID, userID, onEndCall }) => {
     } catch (error) {
       console.error('Error leaving room:', error);
     }
-    onEndCall();
+    // onEndCall();
   };
 
   return (

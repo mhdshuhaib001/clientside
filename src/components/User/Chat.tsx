@@ -102,11 +102,11 @@ const Chat: React.FC = () => {
     setCombinedMessages([...(messagesData || []), ...socketMessages]);
   }, [messagesData, socketMessages]);
 
-  const handleVideoCall = () => {
-    if (selectedChat) {
-      setShowVideoCall(true);
-    }
-  };
+  // const handleVideoCall = () => {
+  //   if (selectedChat) {
+  //     setShowVideoCall(true);
+  //   }
+  // };
   const getRoomId = (user1: string, user2: string) => {
     return [user1, user2].sort().join('-');
   };
@@ -167,7 +167,8 @@ const Chat: React.FC = () => {
   };
 
   const handleEndCall = () => {
-    setShowVideoCall(false);
+    // setShowVideoCall(false);
+    console.log('video call setup')
   };
 
   const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -219,7 +220,7 @@ const Chat: React.FC = () => {
             newMessage={newMessage}
             setNewMessage={setNewMessage}
             handleSendMessage={handleSendMessage}
-            handleVideoCall={handleVideoCall}
+            // handleVideoCall={handleVideoCall}
             handleInputChange={handleInputChange}
             handleStopTyping={handleStopTyping}
             getRoomTypingStatus={getRoomTypingStatus}
@@ -244,7 +245,7 @@ const Chat: React.FC = () => {
               newMessage={newMessage}
               setNewMessage={setNewMessage}
               handleSendMessage={handleSendMessage}
-              handleVideoCall={handleVideoCall}
+              // handleVideoCall={handleVideoCall}
               handleInputChange={handleInputChange}
               handleStopTyping={handleStopTyping}
               getRoomTypingStatus={getRoomTypingStatus}

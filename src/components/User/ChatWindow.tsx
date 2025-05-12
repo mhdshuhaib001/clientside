@@ -10,7 +10,7 @@ interface ChatWindowProps {
   newMessage: string;
   setNewMessage: (message: string) => void;
   handleSendMessage: (e: React.FormEvent<HTMLFormElement>) => void;
-  handleVideoCall: () => void;
+  // handleVideoCall: () => void;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleStopTyping: () => void;
   getRoomTypingStatus: () => boolean;
@@ -22,7 +22,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   currentUserId,
   newMessage,
   handleSendMessage,
-  handleVideoCall,
+  // handleVideoCall,
   handleInputChange,
   handleStopTyping,
   getRoomTypingStatus,
