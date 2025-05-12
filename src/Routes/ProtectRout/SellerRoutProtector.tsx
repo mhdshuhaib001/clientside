@@ -1,4 +1,3 @@
-// src/routes/ProtectRout/SellerRoutProtector.tsx
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getToken, getSellerToken } from '../../utils/getHelper';
