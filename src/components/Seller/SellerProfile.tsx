@@ -38,6 +38,7 @@ export default function SellerProfile() {
   const userId = useSelector((state: RootState) => state.User._id);
 
   const { sellerId } = useParams();
+  console.log(sellerId,'=============================================== Selller Id')
   const [activeTab, setActiveTab] = useState('shop');
   const [newReview, setNewReview] = useState({ rating: 0, comment: '' });
   const [_isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -47,6 +48,8 @@ export default function SellerProfile() {
   const [sellerData, setSellerData] = useState<APIResponse['data'] | null>(null);
 
   const { data: fetchedData, isLoading, error } = useFetchSellerProfileQuery(sellerId ?? '');
+  console.log(fetchedData,'this is the seller fetched data');
+  
   const [addReview] = useAddReviewMutation();
   useEffect(() => {
     if (fetchedData?.data) {
