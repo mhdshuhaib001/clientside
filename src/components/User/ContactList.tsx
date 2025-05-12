@@ -28,6 +28,7 @@ const ContactList: React.FC<ContactListProps> = ({
     contact.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  console.log(filteredContacts,'this is the filterd contaccts')
   return (
     <div className="flex flex-col h-full bg-amber-100 border-r border-gray-200">
       <div className="p-4 border-b border-amber-200">

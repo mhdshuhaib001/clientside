@@ -8,7 +8,7 @@ import { ChangePasswordType } from '../../interface/userTypes/changePasswordType
 export const ApiSlice = createApi({
   reducerPath: 'userApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_SERVER_URL ,
+    baseUrl: import.meta.env.VITE_SERVER_URL,
     credentials: 'include',
     prepareHeaders: (headers) => {
       const token = getToken();
@@ -59,16 +59,16 @@ export const ApiSlice = createApi({
         body: emailData,
       }),
     }),
-   forgetPassword: builder.mutation<AuthResponse, { token: string; newPassword: string }>({
-  query: (newPasswordData) => {
-    console.log('Data sent to /api/auth/forget-password:', newPasswordData);
-    return {
-      url: '/api/auth/forget-password',
-      method: 'POST',
-      body: newPasswordData,
-    };
-  },
-}),
+    forgetPassword: builder.mutation<AuthResponse, { token: string; newPassword: string }>({
+      query: (newPasswordData) => {
+        console.log('Data sent to /api/auth/forget-password:', newPasswordData);
+        return {
+          url: '/api/auth/forget-password',
+          method: 'POST',
+          body: newPasswordData,
+        };
+      },
+    }),
 
     addAddress: builder.mutation<AuthResponse, { address: Address }>({
       query: (addressData) => ({
@@ -107,23 +107,23 @@ export const ApiSlice = createApi({
       query: () => '/api/user/categories',
     }),
 
-    changePassword: builder.mutation<ChangePasswordType, { userId:string,currentPassword: string; newPassword: string; confirmPassword: string }>({
-      query: ({userId, currentPassword, newPassword, confirmPassword }) => ({
+    changePassword: builder.mutation<
+      ChangePasswordType,
+      { userId: string; currentPassword: string; newPassword: string; confirmPassword: string }
+    >({
+      query: ({ userId, currentPassword, newPassword, confirmPassword }) => ({
         url: '/api/user/change-password',
         method: 'POST',
-        body: {userId, currentPassword, newPassword, confirmPassword }
-      })
+        body: { userId, currentPassword, newPassword, confirmPassword },
+      }),
     }),
     fetchAuctionHistory: builder.query({
       query: (userId) => ({
-        url: `/api/user/auction-history?userId=${userId}`, 
+        url: `/api/user/auction-history?userId=${userId}`,
         method: 'GET',
       }),
     }),
-
-    
   }),
-  
 });
 
 export const {
@@ -142,5 +142,5 @@ export const {
   useDeleteAddressMutation,
   useFetchCategoriesQuery,
   useChangePasswordMutation,
-  useFetchAuctionHistoryQuery
+  useFetchAuctionHistoryQuery,
 } = ApiSlice;

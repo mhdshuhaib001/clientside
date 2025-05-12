@@ -13,6 +13,7 @@
   export interface Contact {
     unreadCount: number;
     timestamp: any;
+    role?:string;
     id: string;
     name: string;
     avatar: string;

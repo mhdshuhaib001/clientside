@@ -51,7 +51,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             <h3 className="text-gray-500">{selectedChat.name}</h3>
           </div>
         </div>
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <button
             className="text-gray-600 hover:text-gray-800 p-2 rounded-full hover:bg-gray-100"
             onClick={handleVideoCall}
@@ -61,7 +61,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           <button className="text-gray-600 hover:text-gray-800 p-2 rounded-full hover:bg-gray-100">
             <MoreVertical size={20} />
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Chat Messages */}

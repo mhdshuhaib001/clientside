@@ -7,6 +7,7 @@ import { io } from 'socket.io-client';
 import toast from 'react-hot-toast';
 import { useGetProductByIdQuery } from '../../services/apis/productApi';
 import { useGetAuctionByIdQuery, usePlaceBidMutation } from '../../services/apis/auctionApi';
+import Header from './Header';
 import { RootState } from '../../store/Store';
 import SellerProfileCard from '../Seller/SellerProfileCard';
 import AuctionSkelton from '../commen/Skelton/AuctionSkelton';
@@ -254,6 +255,7 @@ export default function RealTimeBidding() {
 
   return (
     <div className="container mx-auto px-4 py-8 font-serif">
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-4">
           <div className="aspect-w-1 aspect-h-1">

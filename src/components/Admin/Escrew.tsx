@@ -234,6 +234,8 @@ export default function EscrowPaymentsAdmin() {
         <p className="text-center">Loading escrow payments...</p>
       ) : error ? (
         <p className="text-center text-red-500">Error loading payments</p>
+      ) : escrowPayments.length === 0 ? (
+        <p className="text-center text-gray-500">No escrow payments found.</p>
       ) : (
         <>
           <div className="overflow-x-auto">

@@ -5,7 +5,6 @@ import { io } from 'socket.io-client';
 import toast from 'react-hot-toast';
 import { RootState } from '../../../store/Store';
 import { useGetProductByIdQuery } from '../../../services/apis/productApi';
-
 import { useGetAuctionByIdQuery, usePlaceBidMutation } from '../../../services/apis/auctionApi';
 import SellerProfileCard from '../../Seller/SellerProfileCard';
 import AuctionSkeleton from '../../commen/Skelton/AuctionSkelton';
@@ -123,7 +122,6 @@ export default function RealTimeBidding() {
       socket.disconnect();
     };
   }, [id, userId, bids]);
-  
 
   // Generate Quick Bids
   const generateQuickBids = useCallback((currentBidValue: number) => {
@@ -141,7 +139,7 @@ export default function RealTimeBidding() {
       setQuickBids(generateQuickBids(currentBid));
     }
   }, [currentBid, generateQuickBids]);
-  
+
   useEffect(() => {
     if (productData) {
       const initialBid =
@@ -254,44 +252,47 @@ export default function RealTimeBidding() {
   if (!productData) return <div>No product data found.</div>;
 
   return (
-    <div className="container mx-auto px-4 py-8 font-serif">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <ProductDetails
-          productData={productData}
-          currentBid={currentBid}
-          timeLeft={timeLeft}
-          auctionStatus={auctionStatus}
-        />
+    <>
 
-        <div className="space-y-4">
-          <SellerProfileCard
-            sellerName={sellerProfile?.companyName}
-            profileImage={sellerProfile?.profile}
-            id={sellerProfile?.sellerId}
+      <div className="container  mx-auto px-4 py-8 font-serif">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <ProductDetails
+            productData={productData}
+            currentBid={currentBid}
+            timeLeft={timeLeft}
+            auctionStatus={auctionStatus}
           />
 
-          <BiddingLeaderboard bids={bids} />
-
-          {auctionStatus !== 'sold' && (
-            <BiddingControls
-              quickBids={quickBids}
-              customBid={customBid}
-              handleBid={handleBid}
-              handleCustomBid={handleCustomBid}
-              setCustomBid={setCustomBid}
+          <div className="space-y-4">
+            <SellerProfileCard
+              sellerName={sellerProfile?.companyName}
+              profileImage={sellerProfile?.profile}
+              id={sellerProfile?.sellerId}
             />
-          )}
-        </div>
-      </div>
 
-      <AuctionResultModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        isWinner={winnerDetails?.winnerId === userId}
-        productTitle={productData?.itemTitle}
-        winningBid={winnerDetails?.winningBid || 0}
-        checkoutLink={winnerDetails?.checkoutLink || ''}
-      />
-    </div>
+            <BiddingLeaderboard bids={bids} />
+
+            {auctionStatus !== 'sold' && (
+              <BiddingControls
+                quickBids={quickBids}
+                customBid={customBid}
+                handleBid={handleBid}
+                handleCustomBid={handleCustomBid}
+                setCustomBid={setCustomBid}
+              />
+            )}
+          </div>
+        </div>
+
+        <AuctionResultModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          isWinner={winnerDetails?.winnerId === userId}
+          productTitle={productData?.itemTitle}
+          winningBid={winnerDetails?.winningBid || 0}
+          checkoutLink={winnerDetails?.checkoutLink || ''}
+        />
+      </div>
+    </>
   );
 }

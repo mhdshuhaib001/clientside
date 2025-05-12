@@ -13,11 +13,11 @@ const AdminSideBare: React.FC = () => {
     <aside className="w-64 bg-gray-800 text-white min-h-screen flex flex-col items-center p-4">
       {/* Profile Section */}
       <div className="w-full flex flex-col items-start mb-4 p-4 ml-4">
-        <img
+        {/* <img
           src="https://via.placeholder.com/80"
           alt="Profile"
           className="w-20 h-20 bg-gray-600 mb-4 rounded-sm"
-        />
+        /> */}
         <h2 className="text-lg font-semibold">Auction Gems</h2>
         <p className="text-sm text-gray-400">auctiongems@gmail.com</p>
       </div>
