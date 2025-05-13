@@ -20,12 +20,10 @@ export default function RealTimeBidding() {
   const userData = useSelector((state: RootState) => state.User);
   const userId = userData._id;
 
-  // Queries and state
   const { data, error, isLoading } = useGetProductByIdQuery(id);
   const { data: auctionData } = useGetAuctionByIdQuery(id);
   const [placeBid] = usePlaceBidMutation();
 
-  // State management
   const [auctionStatus, setAuctionStatus] = useState<string>('live');
   const [customBid, setCustomBid] = useState('');
   const [currentBid, setCurrentBid] = useState(0);
@@ -54,13 +52,13 @@ export default function RealTimeBidding() {
   }, [productData]);
   const handleAuctionEnd = async () => {
     try {
-      console.log('auctionEndDate');
+      // console.log('auctionEndDate');
       // Call your mutation here
       // await placeBid({
       //   auctionId: id,
       //   // Add any other necessary parameters for the mutation
       // }).unwrap();
-      console.log('Auction ended, mutation called successfully.');
+      // console.log('Auction ended, mutation called successfully.');
     } catch (error) {
       console.error('Failed to call mutation on auction end:', error);
     }
@@ -71,76 +69,35 @@ export default function RealTimeBidding() {
   });
 
   // Socket Connection Effect
-  //  This is the old one
-  // useEffect(() => {
-  //   const socket = io(import.meta.env.VITE_SERVER_URL, {
-  //     path: '/socket.io',
-  //     withCredentials: true,
-  //     // transports: ['websocket', 'polling'],
-  //   });
-  //   socketRef.current = socket;
 
-  //   socket.on('connect', () => {
-  //     console.log('✅ Socket connected:', socket.id);
-  //     console.log('🚪 Joining room for auction:', id, 'User ID:', userId);
-  //     socket.emit('join_auction', id, userId);
-  //   });
-
-  //   socket.on('new_bid', (newBid: any) => {
-  //     try {
-  //       const updatedBid: Bid = {
-  //         ...newBid,
-  //         time: new Date(),
-  //         avatar: newBid.avatar,
-  //       };
-  //       const updatedBids = [updatedBid, ...bids].sort((a, b) => b.amount - a.amount).slice(0, 5);
-
-  //       setBids(updatedBids);
-  //       setCurrentBid(updatedBids[0].amount);
-  //     } catch (error) {
-  //       console.log('socket error:', error);
-  //     }
-  //   });
-
-  //   socket.on('auction_winner', (data) => {
-  //     console.log('🎉 Received winner data:', data);
-
-  //     if (data.winnerId === userId) {
-  //       toast.success('Congratulations! You won the auction!', {
-  //         duration: 5000,
-  //         position: 'top-center',
-  //       });
-  //     } else {
-  //       toast.success(`The auction has ended. Winning bid: $${data.winningBid}`, {
-  //         duration: 5000,
-  //         position: 'top-center',
-  //       });
-  //     }
-
-  //     setIsAuctionEnded(true);
-  //     setWinnerDetails(data);
-  //     setIsModalOpen(true);
-  //   });
-
-  //   return () => {
-  //     socket.emit('leave_auction', id, userId);
-  //     socket.disconnect();
-  //   };
-  // }, [id, userId, bids]);
-
-  // This fucntion is testing fucntion
   useEffect(() => {
     const socket = io(import.meta.env.VITE_SERVER_URL, {
       path: '/socket.io',
       withCredentials: true,
-      // transports: ['websocket'],
+      // transports: ['websocket', 'polling'],
     });
-
     socketRef.current = socket;
 
     socket.on('connect', () => {
       console.log('✅ Socket connected:', socket.id);
+      console.log('🚪 Joining room for auction:', id, 'User ID:', userId);
       socket.emit('join_auction', id, userId);
+    });
+
+    socket.on('new_bid', (newBid: any) => {
+      try {
+        const updatedBid: Bid = {
+          ...newBid,
+          time: new Date(),
+          avatar: newBid.avatar,
+        };
+        const updatedBids = [updatedBid, ...bids].sort((a, b) => b.amount - a.amount).slice(0, 5);
+
+        setBids(updatedBids);
+        setCurrentBid(updatedBids[0].amount);
+      } catch (error) {
+        console.log('socket error:', error);
+      }
     });
 
     socket.on('auction_winner', (data) => {
@@ -163,15 +120,12 @@ export default function RealTimeBidding() {
       setIsModalOpen(true);
     });
 
-    socket.on('disconnect', () => {
-      console.log('❌ Socket disconnected.');
-    });
-
     return () => {
       socket.emit('leave_auction', id, userId);
       socket.disconnect();
     };
-  }, [id, userId]);
+  }, [id, userId, bids]);
+
   setTimeout(() => {
     if (!winnerDetails && !isAuctionEnded) {
       console.warn('⚠️ No auction_winner event received yet');
@@ -315,6 +269,7 @@ export default function RealTimeBidding() {
     await handleBid(bid);
   };
 
+  console.log(auctionStatus,'💀💀💀💀💀💀💀💀💀💀💀💀')
   if (isLoading) return <AuctionSkeleton />;
   if (error) return <div>Error loading product data.</div>;
   if (!productData) return <div>No product data found.</div>;
@@ -339,7 +294,7 @@ export default function RealTimeBidding() {
 
             <BiddingLeaderboard bids={bids} />
 
-            {auctionStatus !== 'sold' && auctionStatus !== 'unsold' && (
+            {auctionStatus === 'live' && (
               <BiddingControls
                 quickBids={quickBids}
                 customBid={customBid}

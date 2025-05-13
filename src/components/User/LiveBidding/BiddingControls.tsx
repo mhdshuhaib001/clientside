@@ -33,7 +33,7 @@ export const BiddingControls: React.FC<BiddingControlsProps> = ({
         type="number"
         value={customBid}
         onChange={(e) => setCustomBid(e.target.value)}
-        placeholder="Enter your bid"
+        placeholder="Enter your bid.."
         className="flex-grow px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300"
       />
       <button
