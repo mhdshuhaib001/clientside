@@ -133,7 +133,7 @@ export default function RealTimeBidding() {
     const socket = io(import.meta.env.VITE_SERVER_URL, {
       path: '/socket.io',
       withCredentials: true,
-      transports: ['websocket'], // force WebSocket to avoid fallback issues
+      // transports: ['websocket'],
     });
 
     socketRef.current = socket;
