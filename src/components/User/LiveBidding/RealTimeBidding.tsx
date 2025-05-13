@@ -75,11 +75,13 @@ export default function RealTimeBidding() {
     const socket = io(import.meta.env.VITE_SERVER_URL, {
       path: '/socket.io',
       withCredentials: true,
-      transports: ['websocket', 'polling'],
+      // transports: ['websocket', 'polling'],
     });
     socketRef.current = socket;
 
     socket.on('connect', () => {
+      console.log('✅ Socket connected:', socket.id);
+      console.log('🚪 Joining room for auction:', id, 'User ID:', userId);
       socket.emit('join_auction', id, userId);
     });
 
@@ -100,6 +102,8 @@ export default function RealTimeBidding() {
     });
 
     socket.on('auction_winner', (data) => {
+      console.log('🎉 Received winner data:', data);
+
       if (data.winnerId === userId) {
         toast.success('Congratulations! You won the auction!', {
           duration: 5000,
@@ -123,6 +127,13 @@ export default function RealTimeBidding() {
     };
   }, [id, userId, bids]);
 
+  setTimeout(() => {
+  if (!winnerDetails && !isAuctionEnded) {
+    console.warn('⚠️ No auction_winner event received yet');
+  }
+}, 15000);
+
+
   // Generate Quick Bids
   const generateQuickBids = useCallback((currentBidValue: number) => {
     const increment = 10;
@@ -139,6 +150,14 @@ export default function RealTimeBidding() {
       setQuickBids(generateQuickBids(currentBid));
     }
   }, [currentBid, generateQuickBids]);
+  useEffect(() => {
+    if (auctionStatus === 'sold' || auctionStatus === 'unsold') {
+      toast.error(`This auction has ended (${auctionStatus}).`, {
+        duration: 5000,
+        position: 'top-center',
+      });
+    }
+  }, [auctionStatus]);
 
   useEffect(() => {
     if (productData) {
@@ -176,6 +195,11 @@ export default function RealTimeBidding() {
 
   // Bid Handlers
   const handleBid = async (amount: number) => {
+    if (auctionStatus === 'sold' || auctionStatus === 'unsold') {
+      toast.error('This auction is no longer active.');
+      return;
+    }
+
     if (!socketRef.current) {
       console.error('Socket is not initialized.');
       return;
@@ -253,13 +277,12 @@ export default function RealTimeBidding() {
 
   return (
     <>
-
       <div className="container  mx-auto px-4 py-8 font-serif">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <ProductDetails
             productData={productData}
             currentBid={currentBid}
-            timeLeft={timeLeft}
+            timeLeft={auctionStatus === 'sold' || auctionStatus === 'unsold' ? null : timeLeft}
             auctionStatus={auctionStatus}
           />
 
@@ -272,7 +295,7 @@ export default function RealTimeBidding() {
 
             <BiddingLeaderboard bids={bids} />
 
-            {auctionStatus !== 'sold' && (
+            {auctionStatus !== 'sold' && auctionStatus !== 'unsold' && (
               <BiddingControls
                 quickBids={quickBids}
                 customBid={customBid}

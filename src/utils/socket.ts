@@ -8,7 +8,7 @@ class SocketConnection {
     if (!this.instance) {
       this.instance = io(import.meta.env.VITE_SERVER_URL, {
         path: '/socket.io',
-        transports: ['websocket', 'polling'],
+        // transports: ['websocket', 'polling'],
         withCredentials: true,
         reconnection: true,
         reconnectionAttempts: 5,

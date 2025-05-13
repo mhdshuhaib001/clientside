@@ -20,7 +20,7 @@ export const useSocket = () => {
     const newSocket = io(import.meta.env.VITE_SERVER_URL, {
       path: "/socket.io",
       withCredentials: true,
-      transports: ['websocket', 'polling']
+      // transports: ['websocket', 'polling']
     });
     
     newSocket.on('connect', () => {
