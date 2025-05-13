@@ -419,10 +419,13 @@ const CheckoutPage: React.FC = () => {
       toast.error('Please select a payment method.');
       return;
     }
-console.warn('Button is working ❤️❤️❤️❤️❤️❤️❤️❤️❤️')
+console.warn('Button is working ❤️❤️❤️❤️❤️❤️❤️❤️❤️',elements,stripe)
 
-    if (!stripe || !elements) return;
-console.log('Stripe payment is not working or check one more time ')
+    if (!stripe || !elements) {
+      console.log('Stripe payment is not working or check one more time ',stripe,elements)
+
+      return
+    }
     if (paymentMethod === 'stripe') {
       try {
         const orderData = {
