@@ -71,34 +71,76 @@ export default function RealTimeBidding() {
   });
 
   // Socket Connection Effect
+  //  This is the old one
+  // useEffect(() => {
+  //   const socket = io(import.meta.env.VITE_SERVER_URL, {
+  //     path: '/socket.io',
+  //     withCredentials: true,
+  //     // transports: ['websocket', 'polling'],
+  //   });
+  //   socketRef.current = socket;
+
+  //   socket.on('connect', () => {
+  //     console.log('✅ Socket connected:', socket.id);
+  //     console.log('🚪 Joining room for auction:', id, 'User ID:', userId);
+  //     socket.emit('join_auction', id, userId);
+  //   });
+
+  //   socket.on('new_bid', (newBid: any) => {
+  //     try {
+  //       const updatedBid: Bid = {
+  //         ...newBid,
+  //         time: new Date(),
+  //         avatar: newBid.avatar,
+  //       };
+  //       const updatedBids = [updatedBid, ...bids].sort((a, b) => b.amount - a.amount).slice(0, 5);
+
+  //       setBids(updatedBids);
+  //       setCurrentBid(updatedBids[0].amount);
+  //     } catch (error) {
+  //       console.log('socket error:', error);
+  //     }
+  //   });
+
+  //   socket.on('auction_winner', (data) => {
+  //     console.log('🎉 Received winner data:', data);
+
+  //     if (data.winnerId === userId) {
+  //       toast.success('Congratulations! You won the auction!', {
+  //         duration: 5000,
+  //         position: 'top-center',
+  //       });
+  //     } else {
+  //       toast.success(`The auction has ended. Winning bid: $${data.winningBid}`, {
+  //         duration: 5000,
+  //         position: 'top-center',
+  //       });
+  //     }
+
+  //     setIsAuctionEnded(true);
+  //     setWinnerDetails(data);
+  //     setIsModalOpen(true);
+  //   });
+
+  //   return () => {
+  //     socket.emit('leave_auction', id, userId);
+  //     socket.disconnect();
+  //   };
+  // }, [id, userId, bids]);
+
+  // This fucntion is testing fucntion
   useEffect(() => {
     const socket = io(import.meta.env.VITE_SERVER_URL, {
       path: '/socket.io',
       withCredentials: true,
-      // transports: ['websocket', 'polling'],
+      transports: ['websocket'], // force WebSocket to avoid fallback issues
     });
+
     socketRef.current = socket;
 
     socket.on('connect', () => {
       console.log('✅ Socket connected:', socket.id);
-      console.log('🚪 Joining room for auction:', id, 'User ID:', userId);
       socket.emit('join_auction', id, userId);
-    });
-
-    socket.on('new_bid', (newBid: any) => {
-      try {
-        const updatedBid: Bid = {
-          ...newBid,
-          time: new Date(),
-          avatar: newBid.avatar,
-        };
-        const updatedBids = [updatedBid, ...bids].sort((a, b) => b.amount - a.amount).slice(0, 5);
-
-        setBids(updatedBids);
-        setCurrentBid(updatedBids[0].amount);
-      } catch (error) {
-        console.log('socket error:', error);
-      }
     });
 
     socket.on('auction_winner', (data) => {
@@ -121,18 +163,20 @@ export default function RealTimeBidding() {
       setIsModalOpen(true);
     });
 
+    socket.on('disconnect', () => {
+      console.log('❌ Socket disconnected.');
+    });
+
     return () => {
       socket.emit('leave_auction', id, userId);
       socket.disconnect();
     };
-  }, [id, userId, bids]);
-
+  }, [id, userId]);
   setTimeout(() => {
-  if (!winnerDetails && !isAuctionEnded) {
-    console.warn('⚠️ No auction_winner event received yet');
-  }
-}, 15000);
-
+    if (!winnerDetails && !isAuctionEnded) {
+      console.warn('⚠️ No auction_winner event received yet');
+    }
+  }, 15000);
 
   // Generate Quick Bids
   const generateQuickBids = useCallback((currentBidValue: number) => {
