@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Header from '../components/User/Header';
+import ShareButton from '../components/commen/Buttons/ShareButton';
 import { useParams } from 'react-router-dom';
 import { useGetProductByIdQuery } from '../services/apis/productApi';
 import { useSubscribeNotificationMutation } from '../services/apis/adminApi';
@@ -213,6 +214,7 @@ export default function ProductPage() {
           {/* Product Details */}
           <div className="space-y-4">
             <h1 className="text-3xl font-bold">{productData?.itemTitle || 'Product Title'}</h1>
+
             <SellerProfileCard
               id={sellerData?.sellerId}
               sellerName={sellerData?.companyName}
@@ -296,6 +298,7 @@ export default function ProductPage() {
                 )}{' '}
               </>
             )}
+
             <div className="space-y-2">
               {productData?.auctionFormat === 'buy-it-now' ? (
                 <button
@@ -348,6 +351,8 @@ export default function ProductPage() {
             </div>
 
             <div className="space-y-4">
+              {productData?._id && <ShareButton productId={productData._id} />}
+
               <h2 className="text-lg font-semibold">Shipping :</h2>
               <p>{productData?.shippingType || 'Standard'}</p>
               <p>

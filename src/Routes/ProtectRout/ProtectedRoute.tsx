@@ -14,7 +14,7 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
       if (isBlocked) {
         localStorage.removeItem('accessToken');
 
-        navigate('/signup'); 
+        navigate('/registration'); 
       }
     }
 

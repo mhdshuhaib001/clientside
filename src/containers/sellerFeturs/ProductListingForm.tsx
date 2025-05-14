@@ -251,7 +251,6 @@ const ProductListingForm: React.FC = () => {
         enableReinitialize={true}
         validationSchema={productListingSchema}
         onSubmit={(values) => {
-          console.log('Formik onSubmit triggered');
           handleSubmit(values);
         }}
       >
@@ -628,5 +627,4 @@ const ProductListingForm: React.FC = () => {
     </div>
   );
 };
-
 export default ProductListingForm;

@@ -24,7 +24,7 @@ const BlockingModal = () => {
       setBlockMessage(data.message);
 
       handleLogout();
-      window.location.href = '/login';
+      window.location.href = '/registration';
     };
 
     socket.on('seller_blocked', handleSellerBlocked);

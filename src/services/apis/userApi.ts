@@ -5,6 +5,7 @@ import { Address } from '../../interface/userTypes/apiTypes';
 import { Category } from '../../interface/adminTypes/adminApiTypes';
 import { ChangePasswordType } from '../../interface/userTypes/changePasswordType';
 
+
 export const ApiSlice = createApi({
   reducerPath: 'userApi',
   baseQuery: fetchBaseQuery({
@@ -38,6 +39,7 @@ export const ApiSlice = createApi({
         body: otpData,
       }),
     }),
+ 
     login: builder.mutation<AuthResponse, AuthRequest>({
       query: (loginData) => ({
         url: '/api/auth/login',

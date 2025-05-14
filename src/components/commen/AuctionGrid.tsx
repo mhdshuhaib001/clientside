@@ -60,20 +60,42 @@ export default function Component() {
 
   useEffect(() => {
     if (products.length > 0) {
-      const filtered = products.filter(
-        (item) =>
-          item.itemTitle.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          ((parseFloat(item.reservePrice) >= priceRange[0] &&
-            parseFloat(item.reservePrice) <= priceRange[1]) ||
-            (item.currentBid &&
-              parseFloat(item.currentBid.toString()) >= priceRange[0] &&
-              parseFloat(item.currentBid.toString()) <= priceRange[1])) &&
-          (statusFilter.length === 0 || statusFilter.includes(getAuctionStatus(item))) &&
-          (selectedCategories.length === 0 || selectedCategories.includes(item.categoryId.name)),
+      const prices = products.map((p) => parseFloat(p.reservePrice));
+      const minPrice = Math.min(...prices);
+      const maxPrice = Math.max(...prices);
+      setPriceRange((prevRange) =>
+        prevRange[0] === 0 && prevRange[1] === 10000 ? [minPrice, maxPrice] : prevRange,
       );
+    }
+  }, [products]);
+
+  useEffect(() => {
+    if (products.length > 0) {
+      const filtered = products.filter((item) => {
+        const titleMatch = item.itemTitle.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
+
+        const reserve = parseFloat(item.reservePrice);
+        const bid = item.currentBid ? parseFloat(item.currentBid.toString()) : null;
+        const priceMatch =
+          (reserve >= priceRange[0] && reserve <= priceRange[1]) ||
+          (bid !== null && bid >= priceRange[0] && bid <= priceRange[1]);
+
+        const status = getAuctionStatus(item);
+        const statusMatch = statusFilter.length === 0 || statusFilter.includes(status);
+        const categoryMatch =
+          selectedCategories.length === 0 || selectedCategories.includes(item.categoryId.name);
+
+        if (!titleMatch) console.log('✘ title mismatch:', item.itemTitle);
+        if (!priceMatch) console.log('✘ price out of range:', reserve, bid);
+        if (!statusMatch) console.log('✘ status filter mismatch:', status);
+        if (!categoryMatch) console.log('✘ category mismatch:', item.categoryId.name);
+
+        return titleMatch && priceMatch && statusMatch && categoryMatch;
+      });
+
       setFilteredItems(filtered);
     }
-  }, [debouncedSearchTerm, searchTerm, priceRange, selectedCategories, statusFilter, products]);
+  }, [debouncedSearchTerm, priceRange, selectedCategories, statusFilter, products]);
 
   // const featuredItems = filteredItems.filter((item) => item.featured);
   const totalPages = Math.ceil(products.length / itemsPerPage);

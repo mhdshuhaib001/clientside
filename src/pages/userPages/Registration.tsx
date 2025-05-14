@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
@@ -62,8 +61,7 @@ const Registration: React.FC = () => {
         email: data.userData?.email,
         name: data.userData?.name,
         role: data.userData?.role,
-        isSeller:data.userData.isSeller
-
+        isSeller: data.userData.isSeller,
       }),
     );
 
@@ -85,12 +83,15 @@ const Registration: React.FC = () => {
             email: googleResponse.userData?.email,
             name: googleResponse.userData?.name,
             role: googleResponse.userData?.role,
-            isSeller:googleResponse.userData.isSeller
-
+            isSeller: googleResponse.userData.isSeller,
           }),
         );
+
+        if (googleResponse.sellerId) {
+          dispatch(setSellerId(googleResponse.sellerId));
+        }
         localStorage.setItem('accessToken', googleResponse.accessToken || '');
-        localStorage.setItem('sellerToken',googleResponse.sellerToken||'')
+        localStorage.setItem('sellerToken', googleResponse.sellerToken || '');
         const token = googleResponse.accessToken || '';
         const cookieOptions = `secure; samesite=strict;max-age=${3 * 24 * 60 * 60}`;
         document.cookie = `accessToken=${token}; ${cookieOptions}`;
@@ -109,7 +110,7 @@ const Registration: React.FC = () => {
     <div className="flex flex-col lg:flex-row min-h-screen bg-amber-50">
       {/* Left Side - Hero Section */}
       <div className="w-full lg:w-1/2 flex items-center justify-center relative p-4 lg:p-8">
-        <div 
+        <div
           className="rounded-lg shadow-2xl relative w-full max-w-xl lg:h-[42rem] p-6 lg:p-8"
           style={{
             backgroundColor: '#AEA235',

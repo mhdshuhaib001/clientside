@@ -5,15 +5,14 @@ import { RootState } from '../../store/Store';
 import toast from 'react-hot-toast';
 interface ReportFormProps {
   onClose: () => void;
-  sellerId:string|undefined
+  sellerId: string | undefined;
 }
 
-export const ReportForm: React.FC<ReportFormProps> = ({ onClose,sellerId }) => {
+export const ReportForm: React.FC<ReportFormProps> = ({ onClose, sellerId }) => {
   const [reportReason, setReportReason] = useState<string>('');
   const [additionalDetails, setAdditionalDetails] = useState<string>('');
   const [addReport] = useAddReportMutation();
   const userId = useSelector((state: RootState) => state.User._id);
-  console.log(sellerId,'inside the report areww')
   const handleReportSeller = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -23,13 +22,19 @@ export const ReportForm: React.FC<ReportFormProps> = ({ onClose,sellerId }) => {
         reportedBy: userId,
         sellerId,
       }).unwrap();
-      toast.success('Report addedd succsessfully');
-      console.log('Report submitted successfully:', response);
-    } catch (error) {
-      console.error('Failed to submit report:', error);
-    }
 
-    onClose();
+      toast.success('Report added successfully');
+      console.log('Report submitted successfully:', response);
+      onClose();
+    } catch (error: any) {
+      console.error('Failed to submit report:', error);
+
+      if (error?.data?.message === 'Access denied: No valid authorization token provided') {
+        toast.error('You dont have accsess');
+      } else {
+        toast.error('Something went wrong. Please try again.');
+      }
+    }
   };
 
   return (
