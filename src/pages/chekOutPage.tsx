@@ -352,6 +352,345 @@
 
 // export default CheckoutPage;
 
+// import React, { useEffect, useState } from 'react';
+// import { CreditCard, WalletMinimal, Truck } from 'lucide-react';
+// import { useParams } from 'react-router-dom';
+// import { useGetProductByIdQuery } from '../services/apis/productApi';
+// import { useGetAddressQuery } from '../services/apis/userApi';
+// import { useNavigate } from 'react-router-dom';
+// import {
+//   useCreateOrderMutation,
+//   useCreateCheckoutSessionMutation,
+// } from '../services/apis/orderApi';
+// import Header from '../components/User/Header';
+// import Footer from '../components/User/Footer';
+// import { useSelector } from 'react-redux';
+// import { RootState } from '../store/Store';
+// import { useStripe, useElements } from '@stripe/react-stripe-js';
+// import toast from 'react-hot-toast';
+
+// const CheckoutPage: React.FC = () => {
+//   const navigate = useNavigate();
+//   const stripe = useStripe();
+//   const elements = useElements();
+//   const { id } = useParams<{ id: string }>();
+//   const userId = useSelector((state: RootState) => state.User._id);
+//   const [createCheckoutSession] = useCreateCheckoutSessionMutation();
+
+//   const { data: address } = useGetAddressQuery(userId);
+//   const { data: product } = useGetProductByIdQuery(id);
+  
+//   const productData = product?.productData || {
+//     _id: '',
+//     images: [''],
+//     itemTitle: 'Loading...',
+//     reservePrice: 0,
+//     shippingCost: 0,
+//     description: 'Loading...',
+//     sellerId: '',
+//     finalBidAmount: 0,
+//     currentBid: 0,
+//     auctionStatus: '',
+//   };
+
+//   const [selectedAddress, setSelectedAddress] = useState<string>('');
+//   const [createOrder, { isLoading: loading }] = useCreateOrderMutation();
+//   const [paymentMethod, setPaymentMethod] = useState('stripe');
+
+//   useEffect(() => {
+//     const orderCompleted = localStorage.getItem('orderCompleted');
+//     if (orderCompleted === 'true') {
+//       navigate('/success');
+//     }
+//     return () => {
+//       localStorage.removeItem('orderCompleted');
+//     };
+//   }, [navigate]);
+
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+
+//     if (!selectedAddress) {
+//       toast.error('Please select a delivery address.');
+//       return;
+//     }
+
+//     if (!paymentMethod) {
+//       toast.error('Please select a payment method.');
+//       return;
+//     }
+// console.warn('Button is working ❤️❤️❤️❤️❤️❤️❤️❤️❤️',elements,stripe)
+
+//     if (!stripe || !elements) {
+//       console.log('Stripe payment is not working or check one more time ',stripe,elements)
+
+//       return
+//     }
+//     if (paymentMethod === 'stripe') {
+//       try {
+//         const orderData = {
+//           buyerId: userId,
+//           sellerId: productData.sellerId,
+//           addressId: selectedAddress,
+//           productId: productData._id,
+//         };
+
+//         // Create order first
+//         const orderResponse = await createOrder(orderData).unwrap();
+//         console.log('Order created successfully:', orderResponse);
+        
+//         // Calculate the price based on auction status
+//         let price = productData.auctionStatus === 'sold' && productData.currentBid
+//           ? Number(productData.currentBid)
+//           : Number(productData.reservePrice);
+        
+//         // Add shipping cost
+//         const totalPrice = price + Number(productData.shippingCost || 0);
+        
+//         // Format price to ensure it's a proper number (cents for Stripe)
+//         const formattedPrice = Math.round(totalPrice);
+
+//         // Prepare product data for checkout session
+//         const checkoutData = {
+//           image: productData.images[0],
+//           name: productData.itemTitle,
+//           price: formattedPrice,
+//           orderId: orderResponse, // Using the orderId returned from createOrder
+//         };
+
+//         console.log('Creating checkout session with data:', checkoutData);
+
+//         // Create checkout session
+//         const sessionResponse = await createCheckoutSession(checkoutData).unwrap();
+//         console.log('Checkout session created:', sessionResponse);
+        
+//         if (sessionResponse && sessionResponse.id) {
+//           // Redirect to Stripe checkout
+//           const result = await stripe.redirectToCheckout({ 
+//             sessionId: sessionResponse.id 
+//           });
+
+//           if (result.error) {
+//             console.error('Stripe redirect error:', result.error.message);
+//             toast.error('Payment processing failed. Please try again.');
+//           }
+//         } else {
+//           toast.error('Failed to create checkout session.');
+//         }
+//       } catch (error) {
+//         console.error('Error during checkout process:', error);
+//         toast.error('An error occurred during checkout. Please try again.');
+//       }
+//     } else {
+//       toast.error('Please select a valid payment method.');
+//     }
+//   };
+
+//   // Calculate total price
+//   const getItemPrice = () => {
+//     return productData.auctionStatus === 'sold' && productData.currentBid
+//       ? Number(productData.currentBid)
+//       : Number(productData.reservePrice);
+//   };
+
+//   const getTotalPrice = () => {
+//     return getItemPrice() + Number(productData.shippingCost || 0);
+//   };
+
+//   return (
+//     <>
+//       <Header />
+//       <div className="min-h-screen bg-[#f1f1df] font-serif p-4 sm:p-6 lg:p-8">
+//         <div>
+//           <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
+//             VintageGems Checkout
+//           </h1>
+//           <form
+//             onSubmit={handleSubmit}
+//             className="bg-white rounded-lg shadow-md overflow-hidden border border-amber-200"
+//           >
+//             <div className="p-6 sm:p-8 border-b border-amber-200">
+//               <div className="grid md:grid-cols-2 gap-8">
+//                 <div className="space-y-6">
+//                   <div>
+//                     <h2 className="text-2xl font-semibold mb-4 text-gray-800">Payment Method</h2>
+//                     <div className="space-y-2">
+//                       {[
+//                         { id: 'stripe', label: 'Pay with Stripe', icon: CreditCard },
+//                       ].map((method) => (
+//                         <label
+//                           key={method.id}
+//                           className="flex items-center space-x-2 p-2 border border-amber-200 rounded-md cursor-pointer bg-white hover:bg-amber-50 transition-colors duration-300"
+//                         >
+//                           <input
+//                             type="radio"
+//                             name="paymentMethod"
+//                             value={method.id}
+//                             checked={paymentMethod === method.id}
+//                             onChange={() => setPaymentMethod(method.id)}
+//                             className="form-radio text-amber-600 focus:ring-amber-500"
+//                           />
+//                           <method.icon className="w-5 h-5 text-amber-600" />
+//                           <span className="text-gray-800">{method.label}</span>
+//                         </label>
+//                       ))}
+//                     </div>
+//                   </div>
+
+//                   <div className="border-t-2 border-amber-200 pt-6">
+//                     <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+//                       Billing Information
+//                     </h2>
+//                     <div className="space-y-4">
+//                       {loading ? (
+//                         <p>Loading...</p>
+//                       ) : address && address.length >= 1 ? (
+//                         <div className="space-y-2">
+//                           <h3 className="text-lg font-semibold text-gray-800">Your Addresses:</h3>
+//                           {address.map((addr: any) => (
+//                             <div key={addr._id} className="border border-gray-300 rounded-md p-4">
+//                               <label className="flex items-center space-x-2">
+//                                 <input
+//                                   type="radio"
+//                                   name="selectedAddress"
+//                                   value={addr._id}
+//                                   onChange={() => setSelectedAddress(addr._id ?? '')}
+//                                   className="form-radio text-amber-600 focus:ring-amber-500"
+//                                 />
+//                                 <div>
+//                                   <p className="text-gray-700">
+//                                     <strong>Full Name:</strong> {addr.fullName}
+//                                   </p>
+//                                   <p className="text-gray-700">
+//                                     <strong>Phone Number:</strong> {addr.phoneNumber}
+//                                   </p>
+//                                   <p className="text-gray-700">
+//                                     <strong>Street Address:</strong> {addr.streetAddress}
+//                                   </p>
+//                                   <p className="text-gray-700">
+//                                     <strong>City:</strong> {addr.city}
+//                                   </p>
+//                                   <p className="text-gray-700">
+//                                     <strong>State:</strong> {addr.state}
+//                                   </p>
+//                                   <p className="text-gray-700">
+//                                     <strong>Postal Code:</strong> {addr.postalCode}
+//                                   </p>
+//                                   <p className="text-gray-700">
+//                                     <strong>Country:</strong> {addr.country}
+//                                   </p>
+//                                 </div>
+//                               </label>
+//                             </div>
+//                           ))}
+//                         </div>
+//                       ) : (
+//                         <div>
+//                           <button 
+//                             type="button" 
+//                             onClick={() => navigate('/profile/address')}
+//                             className="bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700"
+//                           >
+//                             Add Address
+//                           </button>
+//                         </div>
+//                       )}
+//                     </div>
+//                   </div>
+//                 </div>
+//                 <div className="space-y-6">
+//                   <div>
+//                     <h2 className="text-2xl font-semibold mb-4 text-gray-800">Vintage Item</h2>
+//                     <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+//                       <div className="aspect-w-16 aspect-h-9 mb-4">
+//                         {productData.images[0] && (
+//                           <img
+//                             src={productData.images[0]}
+//                             alt={productData.itemTitle}
+//                             className="object-cover rounded-md w-40 h-40"
+//                           />
+//                         )}
+//                       </div>
+//                       <h3 className="text-lg font-semibold text-gray-800">
+//                         {productData.itemTitle}
+//                       </h3>
+//                     </div>
+//                   </div>
+//                   <div>
+//                     <h2 className="text-2xl font-semibold mb-4 text-gray-800">Order Summary</h2>
+//                     <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+//                       <div className="space-y-2">
+//                         <div className="flex justify-between text-gray-800">
+//                           <span>{productData.itemTitle}</span>
+//                           <span>${getItemPrice().toFixed(2)}</span>
+//                         </div>
+
+//                         {productData.auctionStatus === 'sold' && productData.finalBidAmount && (
+//                           <div className="mt-2 bg-gray-100 p-4 rounded-md border border-amber-300">
+//                             <h3 className="text-xl font-semibold text-gray-800">
+//                               Final Bid Amount
+//                             </h3>
+//                             <div className="flex justify-between text-gray-800">
+//                               <span>Final Bid:</span>
+//                               <span>${productData.finalBidAmount.toFixed(2)}</span>
+//                             </div>
+//                           </div>
+//                         )}
+
+//                         <div className="border-t border-amber-300 my-2 pt-2"></div>
+
+//                         <div className="flex justify-between text-gray-800">
+//                           <span>Subtotal</span>
+//                           <span>${getItemPrice().toFixed(2)}</span>
+//                         </div>
+
+//                         <div className="flex justify-between text-gray-800">
+//                           <span>Shipping</span>
+//                           <span>${Number(productData.shippingCost || 0).toFixed(2)}</span>
+//                         </div>
+
+//                         <div className="border-t border-amber-300 my-2 pt-2"></div>
+
+//                         <div className="flex justify-between font-semibold text-gray-900">
+//                           <span>Total</span>
+//                           <span>${getTotalPrice().toFixed(2)}</span>
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </div>
+
+//                   <button
+//                     type="submit"
+//                     disabled={loading}
+//                     className={`w-full ${loading ? 'bg-gray-400' : 'bg-[#975f26]'} text-white py-2 px-4 rounded-md hover:bg-[#7a4d1e] focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-colors duration-300`}
+//                   >
+//                     {loading ? 'Processing...' : 'Complete Purchase'}
+//                   </button>
+//                   <p className="text-sm text-gray-600 text-center">
+//                     By completing this purchase, you agree to our{' '}
+//                     <a href="#" className="underline hover:text-amber-800">
+//                       Terms of Service
+//                     </a>{' '}
+//                     and{' '}
+//                     <a href="#" className="underline hover:text-amber-800">
+//                       Privacy Policy
+//                     </a>
+//                     .
+//                   </p>
+//                 </div>
+//               </div>
+//             </div>
+//           </form>
+//         </div>
+//       </div>
+//       <Footer />
+//     </>
+//   );
+// };
+
+// export default CheckoutPage;
+
+
 import React, { useEffect, useState } from 'react';
 import { CreditCard, WalletMinimal, Truck } from 'lucide-react';
 import { useParams } from 'react-router-dom';
@@ -361,6 +700,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   useCreateOrderMutation,
   useCreateCheckoutSessionMutation,
+  useCheckProductPurchaseStatusQuery,
 } from '../services/apis/orderApi';
 import Header from '../components/User/Header';
 import Footer from '../components/User/Footer';
@@ -378,7 +718,20 @@ const CheckoutPage: React.FC = () => {
   const [createCheckoutSession] = useCreateCheckoutSessionMutation();
 
   const { data: address } = useGetAddressQuery(userId);
-  const { data: product } = useGetProductByIdQuery(id);
+  const { data: product, isLoading: productLoading } = useGetProductByIdQuery(id);
+  const { data: purchaseStatus, isLoading: statusLoading } = useCheckProductPurchaseStatusQuery({ 
+    productId: id, 
+  });
+  
+  console.log(purchaseStatus,'====================')
+  const [isAlreadyPurchased, setIsAlreadyPurchased] = useState(false);
+  
+  useEffect(() => {
+    // Check if product is already purchased
+    if (purchaseStatus && purchaseStatus.isPurchased) {
+      setIsAlreadyPurchased(true);
+    }
+  }, [purchaseStatus]);
   
   const productData = product?.productData || {
     _id: '',
@@ -407,6 +760,14 @@ const CheckoutPage: React.FC = () => {
     };
   }, [navigate]);
 
+  // Redirect if user is trying to access the seller's own product
+  useEffect(() => {
+    if (product && product.productData && product.productData.sellerId === userId) {
+      toast.error("You cannot purchase your own product");
+      navigate('/');
+    }
+  }, [product, userId, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -419,13 +780,12 @@ const CheckoutPage: React.FC = () => {
       toast.error('Please select a payment method.');
       return;
     }
-console.warn('Button is working ❤️❤️❤️❤️❤️❤️❤️❤️❤️',elements,stripe)
 
     if (!stripe || !elements) {
-      console.log('Stripe payment is not working or check one more time ',stripe,elements)
-
+      console.log('Stripe payment is not working or check one more time ', stripe, elements)
       return
     }
+    
     if (paymentMethod === 'stripe') {
       try {
         const orderData = {
@@ -496,6 +856,81 @@ console.warn('Button is working ❤️❤️❤️❤️❤️❤️❤️❤️
   const getTotalPrice = () => {
     return getItemPrice() + Number(productData.shippingCost || 0);
   };
+
+  // Show loading state
+  if (productLoading || statusLoading) {
+    return (
+      <>
+        <Header />
+        <div className="min-h-screen bg-[#f1f1df] font-serif p-4 sm:p-6 lg:p-8 flex items-center justify-center">
+          <div className="bg-white p-8 rounded-lg shadow-md text-center">
+            <h2 className="text-2xl font-semibold mb-4">Loading...</h2>
+            <p>Please wait while we fetch product information.</p>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  // Show already purchased message
+  if (isAlreadyPurchased) {
+    return (
+      <>
+        <Header />
+        <div className="min-h-screen bg-[#f1f1df] font-serif p-4 sm:p-6 lg:p-8 flex items-center justify-center">
+          <div className="bg-white p-8 rounded-lg shadow-md text-center max-w-md w-full border border-amber-200">
+            <div className="mb-6 text-amber-600">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-semibold mb-4 text-gray-800">Already Purchased</h2>
+            <p className="text-gray-600 mb-6">
+              You have already purchased this vintage item. Please check your orders section to track your purchase.
+            </p>
+            <div className="flex space-x-4 justify-center">
+              <button 
+                onClick={() => navigate('/orders')} 
+                className="bg-amber-600 text-white px-6 py-2 rounded-md hover:bg-amber-700 transition-colors"
+              >
+                View My Orders
+              </button>
+              <button 
+                onClick={() => navigate('/')} 
+                className="bg-gray-200 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 transition-colors"
+              >
+                Return Home
+              </button>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  // Check if the product exists or is available for purchase
+  if (!product || !product.productData) {
+    return (
+      <>
+        <Header />
+        <div className="min-h-screen bg-[#f1f1df] font-serif p-4 sm:p-6 lg:p-8 flex items-center justify-center">
+          <div className="bg-white p-8 rounded-lg shadow-md text-center">
+            <h2 className="text-2xl font-semibold mb-4">Product Not Available</h2>
+            <p>This product is no longer available for purchase.</p>
+            <button 
+              onClick={() => navigate('/')} 
+              className="mt-6 bg-amber-600 text-white px-6 py-2 rounded-md hover:bg-amber-700 transition-colors"
+            >
+              Browse Other Items
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>

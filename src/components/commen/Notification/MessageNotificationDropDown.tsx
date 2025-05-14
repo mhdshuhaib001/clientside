@@ -136,46 +136,47 @@ const MessageNotificationDropdown: React.FC<MessageNotificationDropdownProps> = 
           </div>
         );
 
-      case 'order':
-        return (
-          <div
-            key={notification.id}
-            className={`
-              p-4 border-b border-gray-100 
-              hover:bg-green-50 cursor-pointer 
-              group relative
-              ${!notification.isRead ? 'bg-green-25' : ''}
-            `}
-            onClick={() => {
-              onMarkAsRead(notification.id);
-              onNotificationClick?.(notification);
-            }}
-          >
-            {/* Read/Unread Indicator */}
-            {!notification.isRead && (
-              <div className="absolute left-1 top-1/2 -translate-y-1/2 
-                w-2 h-2 bg-green-500 rounded-full 
-                animate-pulse group-hover:animate-none"
-              />
-            )}
+  case 'order':
+  return (
+    <div
+      key={notification.id}
+      className={`
+        p-4 border-b border-gray-100 
+        hover:bg-green-50 cursor-pointer 
+        group relative
+        ${!notification.isRead ? 'bg-green-25' : ''}
+      `}
+      onClick={() => {
+        onMarkAsRead(notification.id);
+        if (onNotificationClick) {
+          onNotificationClick(notification);
+        } else {
+          window.location.href = 'https://auction-gemss.vercel.app/profile/seller/order-management';
+        }
+      }}
+    >
+      {!notification.isRead && (
+        <div className="absolute left-1 top-1/2 -translate-y-1/2 
+          w-2 h-2 bg-green-500 rounded-full 
+          animate-pulse group-hover:animate-none"
+        />
+      )}
 
-            <div className="flex justify-between items-start">
-              <span className="font-medium text-gray-800">
-                New Order
-              </span>
-              <span className="text-xs text-gray-500">
-                {new Date(notification.timestamp).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
-              </span>
-            </div>
-            <div className="text-sm text-gray-600 mt-1">
-              <p className="font-medium">{notification.productName}</p>
-              <p className="text-green-600">Amount: ${notification.price.toFixed(2)}</p>
-            </div>
-          </div>
-        );
+      <div className="flex justify-between items-start">
+        <span className="font-medium text-gray-800">New Order</span>
+        <span className="text-xs text-gray-500">
+          {new Date(notification.timestamp).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+          })}
+        </span>
+      </div>
+      <div className="text-sm text-gray-600 mt-1">
+        <p className="font-medium">{notification.productName}</p>
+        <p className="text-green-600">Amount: ${notification.price.toFixed(2)}</p>
+      </div>
+    </div>
+  );
     }
   };
 

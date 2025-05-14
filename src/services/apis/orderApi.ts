@@ -24,6 +24,12 @@ export const orderApi = createApi({
         body: orderData,
       }),
     }),
+    checkProductPurchaseStatus: builder.query({
+      query: ({ productId }) => ({
+        url: `/api/orders/check-purchase-status/${productId}`,
+        method: 'GET',
+      }),
+    }),
     createCheckoutSession: builder.mutation({
       query: (orderData) => ({
         url: '/api/orders/checkout-session',
@@ -40,4 +46,10 @@ export const orderApi = createApi({
   }),
 });
 
-export const { useCreateOrderMutation, useCreateCheckoutSessionMutation, useFetchOrderByUserQuery, useFetchOrderByIdQuery } = orderApi;
+export const {
+  useCreateOrderMutation,
+  useCheckProductPurchaseStatusQuery,
+  useCreateCheckoutSessionMutation,
+  useFetchOrderByUserQuery,
+  useFetchOrderByIdQuery,
+} = orderApi;
